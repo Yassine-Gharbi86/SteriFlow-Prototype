@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SteriFlow - Créer/Modifier une Boîte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Custom select dropdown styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-8 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Logo -->
+                <img src="Assets/Logo.jpg" alt="SteriFlow Logo" class="h-12 object-contain">
+            </div>
+            <h1 class="text-2xl font-semibold text-gray-800">CRÉER / MODIFIER UNE BOÎTE</h1>
+            <div class="w-48"></div> <!-- Spacer for centering -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Form -->
+            <div class="lg:col-span-2">
+                <!-- Dropdowns -->
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div>
+                        <select id="kitName" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Nom du Boîte</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="service" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>service</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="mb-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex-1 relative">
+                            <input 
+                                type="text" 
+                                id="searchInput"
+                                placeholder="Search..." 
+                                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button id="searchBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                        <select id="blocOperatoire" class="px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Bloc opératoire</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Instruments Table -->
+                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">INSTRUMENT</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">disponibilité</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">QUANTITÉ</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">ÉTAT</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">commentaire</th>
+                            </tr>
+                        </thead>
+                        <tbody id="instrumentsTable" class="divide-y divide-gray-200">
+                            <!-- Instruments will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-end mb-6">
+                    <button id="addInstrumentBtn" class="w-12 h-12 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">Informations complémentaires</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="text-sm">
+                            <span class="text-gray-600">Créée / modifiée:</span>
+                            <span class="ml-2 text-gray-800" id="dateCreated">-</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-gray-600">ID Unique:</span>
+                            <span class="ml-2 text-gray-800 font-mono text-xs" id="uniqueId">-</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">Observations:</label>
+                        <textarea id="observations" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-center space-x-4">
+                    <button id="generateQRBtn" class="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        GÉNÉRER QR CODE
+                    </button>
+                    <button id="saveBtn" class="px-8 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                        SAUVEGARDER
+                    </button>
+                    <button id="deleteBtn" class="px-8 py-3 bg-white border-2 border-red-500 text-red-500 rounded-lg font-medium hover:bg-red-50 transition-colors">
+                        SUPPRIMER
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column - QR Code -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 sticky top-8">
+                    <!-- QR Code -->
+                    <div id="qrcodeContainer" class="flex justify-center items-center mb-6 bg-gray-50 rounded-lg p-8">
+                        <div id="qrcode" class="inline-block"></div>
+                        <div id="qrPlaceholder" class="text-gray-400 text-center">
+                            <svg class="w-48 h-48 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                            <p class="text-sm">Le QR code apparaîtra ici</p>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Informations complémentaires</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Créée / modifiée:</span>
+                                <span class="text-gray-800" id="dateCreatedSidebar">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">ID Unique:</span>
+                                <span class="text-gray-800 font-mono text-xs" id="uniqueIdSidebar">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Responsable:</span>
+                                <span class="text-gray-800" id="responsable">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // State management
+        let instruments = [];
+        let qrGenerated = false;
+        let kitUniqueId = '';
+        let kitCreationDate = '';
+
+        // Don't initialize date - it will be set when QR is generated
+
+        // Add instrument functionality
+        document.getElementById('addInstrumentBtn').addEventListener('click', function() {
+            addInstrumentRow();
+        });
+
+        function addInstrumentRow(data = {}) {
+            const row = {
+                id: Date.now(),
+                name: data.name || '',
+                available: data.available || false,
+                quantity: data.quantity || 1,
+                state: data.state || 'fiable',
+                comment: data.comment || ''
+            };
+            
+            instruments.push(row);
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('instrumentsTable');
+            tbody.innerHTML = '';
+
+            instruments.forEach((instrument, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <input 
+                            type="text" 
+                            value="${instrument.name}"
+                            placeholder="Nom de l'instrument"
+                            class="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onchange="updateInstrument(${index}, 'name', this.value)"
+                        >
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <input 
+                            type="checkbox" 
+                            ${instrument.available ? 'checked' : ''}
+                            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                            onchange="updateInstrument(${index}, 'available', this.checked)"
+                        >
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="decrementQuantity(${index})" class="w-6 h-6 bg-gray-200 rounded hover:bg-gray-300 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                </svg>
+                            </button>
+                            <span class="w-8 text-center font-medium">${instrument.quantity}</span>
+                            <button onclick="incrementQuantity(${index})" class="w-6 h-6 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <select 
+                            class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            onchange="updateInstrument(${index}, 'state', this.value)"
+                        >
+                            <option value="fiable" ${instrument.state === 'fiable' ? 'selected' : ''}>fiable</option>
+                            <option value="non fiable" ${instrument.state === 'non fiable' ? 'selected' : ''}>non fiable</option>
+                            <option value="a verifier" ${instrument.state === 'a verifier' ? 'selected' : ''}>à vérifier</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4">
+                        <input 
+                            type="text" 
+                            value="${instrument.comment}"
+                            placeholder="Commentaire"
+                            class="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            onchange="updateInstrument(${index}, 'comment', this.value)"
+                        >
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateInstrument(index, field, value) {
+            instruments[index][field] = value;
+        }
+
+        function incrementQuantity(index) {
+            instruments[index].quantity++;
+            renderTable();
+        }
+
+        function decrementQuantity(index) {
+            if (instruments[index].quantity > 1) {
+                instruments[index].quantity--;
+                renderTable();
+            }
+        }
+
+        // Generate QR Code
+        document.getElementById('generateQRBtn').addEventListener('click', function() {
+            const kitName = document.getElementById('kitName').value;
+            const service = document.getElementById('service').value;
+            const observations = document.getElementById('observations').value;
+
+            if (instruments.length === 0) {
+                alert('Veuillez ajouter au moins un instrument avant de générer le QR code.');
+                return;
+            }
+
+            // Generate unique ID and date only when QR is generated
+            if (!kitUniqueId) {
+                // Create unique ID: KIT-YYYYMMDD-RANDOM
+                const now = new Date();
+                const dateStr = now.getFullYear() + 
+                    String(now.getMonth() + 1).padStart(2, '0') + 
+                    String(now.getDate()).padStart(2, '0');
+                const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+                kitUniqueId = `KIT-${dateStr}-${randomStr}`;
+                
+                // Set creation date
+                kitCreationDate = now.toLocaleDateString('fr-FR');
+                
+                // Update UI
+                document.getElementById('dateCreated').textContent = kitCreationDate;
+                document.getElementById('dateCreatedSidebar').textContent = kitCreationDate;
+                document.getElementById('uniqueId').textContent = kitUniqueId;
+                document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
+            }
+
+            // Clear previous QR code
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            document.getElementById('qrPlaceholder').style.display = 'none';
+
+            // Prepare data
+            const data = {
+                kitId: kitUniqueId,
+                kitName,
+                service,
+                instruments,
+                observations,
+                date: kitCreationDate
+            };
+
+            // Encode data as URL parameter
+            const encodedData = encodeURIComponent(JSON.stringify(data));
+            const viewerURL = `${window.location.origin}${window.location.pathname.replace('index.html', '')}viewer.html?data=${encodedData}`;
+
+            // Generate QR code
+            new QRCode(qrcodeDiv, {
+                text: viewerURL,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            qrGenerated = true;
+            
+            // Show success message with unique ID
+            showNotification(`QR Code généré avec succès! ID: ${kitUniqueId}`, 'success');
+        });
+
+        // Save functionality
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const kitName = document.getElementById('kitName').value;
+            const service = document.getElementById('service').value;
+            const observations = document.getElementById('observations').value;
+
+            // Generate unique ID and date if not already generated
+            if (!kitUniqueId) {
+                const now = new Date();
+                const dateStr = now.getFullYear() + 
+                    String(now.getMonth() + 1).padStart(2, '0') + 
+                    String(now.getDate()).padStart(2, '0');
+                const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+                kitUniqueId = `KIT-${dateStr}-${randomStr}`;
+                kitCreationDate = now.toLocaleDateString('fr-FR');
+                
+                // Update UI
+                document.getElementById('dateCreated').textContent = kitCreationDate;
+                document.getElementById('dateCreatedSidebar').textContent = kitCreationDate;
+                document.getElementById('uniqueId').textContent = kitUniqueId;
+                document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
+            }
+
+            const data = {
+                kitId: kitUniqueId,
+                kitName,
+                service,
+                instruments,
+                observations,
+                date: kitCreationDate
+            };
+
+            // Save to localStorage with unique ID as key
+            localStorage.setItem(`kit_${kitUniqueId}`, JSON.stringify(data));
+
+            showNotification(`Boîte sauvegardée avec succès! ID: ${kitUniqueId}`, 'success');
+        });
+
+        // Delete functionality
+        document.getElementById('deleteBtn').addEventListener('click', function() {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette boîte?')) {
+                instruments = [];
+                kitUniqueId = '';
+                kitCreationDate = '';
+                renderTable();
+                document.getElementById('qrcode').innerHTML = '';
+                document.getElementById('qrPlaceholder').style.display = 'block';
+                document.getElementById('observations').value = '';
+                document.getElementById('dateCreated').textContent = '-';
+                document.getElementById('dateCreatedSidebar').textContent = '-';
+                document.getElementById('uniqueId').textContent = '-';
+                document.getElementById('uniqueIdSidebar').textContent = '-';
+                showNotification('Boîte supprimée', 'info');
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize with empty state
+        renderTable();
+    </script>
+</body>
+</html>

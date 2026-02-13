@@ -6,6 +6,7 @@
     <title>SteriFlow - Créer/Modifier une Boîte</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="config.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -354,9 +355,8 @@
             // Encode data as URL parameter
             const encodedData = encodeURIComponent(JSON.stringify(data));
             
-            // Get the base URL (works for both local and GitHub Pages)
-            const baseUrl = window.location.href.split('?')[0].replace('index.html', '');
-            const viewerURL = `${baseUrl}viewer.html?data=${encodedData}`;
+            // Use the config function to get the correct viewer URL
+            const viewerURL = getViewerUrl(encodedData);
             currentViewerURL = viewerURL; // Store for test link button
 
             // Generate QR code using QRious

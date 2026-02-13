@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SteriFlow - Créer/Modifier une Boîte</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -157,6 +157,22 @@
                         </div>
                     </div>
 
+                    <!-- Download QR Button -->
+                    <div id="downloadQRSection" class="mb-4 hidden">
+                        <button id="downloadQRBtn" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-2">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Télécharger QR Code
+                        </button>
+                        <button id="testLinkBtn" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors text-sm">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            Tester le lien
+                        </button>
+                    </div>
+
                     <!-- Info -->
                     <div class="border-t border-gray-200 pt-4">
                         <h3 class="text-sm font-semibold text-gray-700 mb-3">Informations complémentaires</h3>
@@ -186,6 +202,7 @@
         let qrGenerated = false;
         let kitUniqueId = '';
         let kitCreationDate = '';
+        let currentViewerURL = '';
 
         // Don't initialize date - it will be set when QR is generated
 
@@ -336,22 +353,52 @@
 
             // Encode data as URL parameter
             const encodedData = encodeURIComponent(JSON.stringify(data));
-            const viewerURL = `${window.location.origin}${window.location.pathname.replace('index.html', '')}viewer.html?data=${encodedData}`;
+            
+            // Get the base URL (works for both local and GitHub Pages)
+            const baseUrl = window.location.href.split('?')[0].replace('index.html', '');
+            const viewerURL = `${baseUrl}viewer.html?data=${encodedData}`;
+            currentViewerURL = viewerURL; // Store for test link button
 
-            // Generate QR code
-            new QRCode(qrcodeDiv, {
-                text: viewerURL,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
+            // Generate QR code using QRious
+            const canvas = document.createElement('canvas');
+            const qr = new QRious({
+                element: canvas,
+                value: viewerURL,
+                size: 200,
+                level: 'H'
             });
-
+            
+            qrcodeDiv.appendChild(canvas);
             qrGenerated = true;
+            
+            // Show download button
+            document.getElementById('downloadQRSection').classList.remove('hidden');
             
             // Show success message with unique ID
             showNotification(`QR Code généré avec succès! ID: ${kitUniqueId}`, 'success');
+            
+            console.log('QR Code URL:', viewerURL); // For debugging
+        });
+
+        // Download QR Code
+        document.getElementById('downloadQRBtn').addEventListener('click', function() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `SteriFlow_${kitUniqueId}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                showNotification('QR Code téléchargé!', 'success');
+            }
+        });
+
+        // Test link button - opens viewer in new tab
+        document.getElementById('testLinkBtn').addEventListener('click', function() {
+            if (currentViewerURL) {
+                window.open(currentViewerURL, '_blank');
+            } else {
+                alert('Veuillez d\'abord générer le QR code');
+            }
         });
 
         // Save functionality
@@ -401,6 +448,7 @@
                 renderTable();
                 document.getElementById('qrcode').innerHTML = '';
                 document.getElementById('qrPlaceholder').style.display = 'block';
+                document.getElementById('downloadQRSection').classList.add('hidden');
                 document.getElementById('observations').value = '';
                 document.getElementById('dateCreated').textContent = '-';
                 document.getElementById('dateCreatedSidebar').textContent = '-';

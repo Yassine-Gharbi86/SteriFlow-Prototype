@@ -167,7 +167,7 @@
             
             if (dataParam) {
                 try {
-                    return JSON.parse(decodeURIComponent(dataParam));
+                    return JSON.parse(decodeURIComponent(escape(atob(dataParam))));
                 } catch (e) {
                     console.error('Error parsing data:', e);
                     return null;

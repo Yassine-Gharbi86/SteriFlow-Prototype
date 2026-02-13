@@ -353,7 +353,7 @@
             };
 
             // Encode data as URL parameter
-            const encodedData = encodeURIComponent(JSON.stringify(data));
+            const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
             
             // Use the config function to get the correct viewer URL
             const viewerURL = getViewerUrl(encodedData);
@@ -364,8 +364,8 @@
             const qr = new QRious({
                 element: canvas,
                 value: viewerURL,
-                size: 200,
-                level: 'H'
+                size: 320,
+                level: 'L'
             });
             
             qrcodeDiv.appendChild(canvas);

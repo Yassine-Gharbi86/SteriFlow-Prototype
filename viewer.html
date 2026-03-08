@@ -2,335 +2,833 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SteriFlow - Contenu de la Boîte</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SteriFlow — Vérification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:        #1B3A5C;
+            --navy-deep:   #102742;
+            --teal:        #177A7A;
+            --bg:          #EEF2F8;
+            --surface:     #FFFFFF;
+            --surface-2:   #F7F9FC;
+            --border:      #D4DCE9;
+            --text-1:      #141E2D;
+            --text-2:      #4A5A6E;
+            --text-3:      #7B8FA3;
+            --success:     #1A6B45;
+            --success-bg:  #EAF5EF;
+            --success-bd:  #86C8A5;
+            --warn:        #7B5A10;
+            --warn-bg:     #FEF9EC;
+            --warn-bd:     #D4A941;
+            --danger:      #8B2020;
+            --danger-bg:   #FEF2F2;
+            --danger-bd:   #D97575;
+            --radius:      10px;
+            --radius-lg:   16px;
+            --radius-xl:   20px;
+            --shadow-sm:   0 1px 4px rgba(20,30,45,0.07);
+            --shadow:      0 4px 16px rgba(20,30,45,0.09);
+            --shadow-lg:   0 8px 32px rgba(20,30,45,0.14);
+        }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
-        /* Mobile-first optimizations */
-        @media (max-width: 768px) {
-            .instrument-card {
-                min-height: 60px;
-            }
+        /* ── Header ── */
+        header {
+            background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 70px;
+}
+
+        .header-inner {
+            max-width: 680px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
         }
 
-        /* Checkmark animation */
-        .checkmark {
-            transition: all 0.3s ease;
+        .header-logo img {
+            height: 160px;
+            object-fit: contain;
         }
+
+        .header-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-2);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .header-badge-dot {
+            width: 7px;
+            height: 7px;
+            background: #4ADE80;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.85); }
+        }
+
+        /* ── Content ── */
+        .content {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* ── Kit Info Card ── */
+        .kit-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 16px;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .kit-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .kit-name {
+            font-size: clamp(1.2rem, 5vw, 1.625rem);
+            font-weight: 700;
+            color: var(--text-1);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+
+        .kit-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--success-bg);
+            border: 1px solid var(--success-bd);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kit-icon svg { width: 24px; height: 24px; color: var(--success); }
+
+        .kit-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+
+        .tag svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+        .tag-blue   { background: #EBF4FF; color: #1A4B8E; }
+        .tag-gray   { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+        .tag-purple { background: #F3EEFF; color: #5B21B6; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; }
+
+        /* ── Observations ── */
+        .obs-card {
+            background: var(--warn-bg);
+            border: 1px solid var(--warn-bd);
+            border-left: 4px solid var(--warn-bd);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .obs-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--warn);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .obs-title svg { width: 13px; height: 13px; }
+        .obs-text { font-size: 0.875rem; color: var(--text-1); line-height: 1.5; }
+
+        /* ── Progress ── */
+        .progress-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            animation: slideUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .progress-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-count {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--navy);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .progress-bar-bg {
+            background: var(--bg);
+            border-radius: 99px;
+            height: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--teal) 100%);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        .progress-bar-fill.complete {
+            background: linear-gradient(90deg, var(--success) 0%, #22c55e 100%);
+        }
+
+        /* ── Complete Banner ── */
+        .complete-banner {
+            display: none;
+            background: var(--success-bg);
+            border: 1px solid var(--success-bd);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-top: 10px;
+            align-items: center;
+            gap: 10px;
+            animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        .complete-banner.show { display: flex; }
+
+        @keyframes bounceIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .complete-banner svg { width: 20px; height: 20px; color: var(--success); flex-shrink: 0; }
+        .complete-banner p { font-size: 0.875rem; font-weight: 600; color: var(--success); }
+
+        /* ── Instruments List ── */
+        .instruments-section {
+            animation: slideUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 10px;
+            padding: 0 2px;
+        }
+
+        .instrument-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .instrument-card:active { transform: scale(0.988); }
 
         .instrument-card.checked {
-            background-color: #f0fdf4;
-            border-color: #22c55e;
+            border-color: var(--success-bd);
+            background: linear-gradient(135deg, var(--surface) 0%, var(--success-bg) 100%);
+            box-shadow: 0 4px 16px rgba(26, 107, 69, 0.12);
         }
 
-        /* Print styles */
+        .instrument-card.checking {
+            animation: cardCheck 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes cardCheck {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.025); }
+            100% { transform: scale(1); }
+        }
+
+        .instr-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+        }
+
+        /* Checkbox circle */
+        .check-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid var(--border-2, #BBC7D9);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .check-circle svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .instrument-card.checked .check-circle {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .instrument-card.checked .check-circle svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .instr-info { flex: 1; min-width: 0; }
+
+        .instr-name {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-1);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .instr-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .instr-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        .instr-tag svg { width: 11px; height: 11px; }
+
+        .tag-qty     { background: #EBF4FF; color: #1A4B8E; }
+        .tag-avail   { background: var(--success-bg); color: var(--success); }
+        .tag-unavail { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+
+        .instr-chevron {
+            color: var(--text-3);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .instr-chevron svg { width: 18px; height: 18px; display: block; }
+        .instrument-card.expanded .instr-chevron { transform: rotate(180deg); }
+
+        /* ── Comment row ── */
+        .instr-comment {
+            font-size: 0.8rem;
+            color: var(--text-3);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* ── Pieces Section ── */
+        .pieces-section {
+            border-top: 1px solid var(--border);
+            background: var(--surface-2);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .instrument-card.expanded .pieces-section { max-height: 600px; }
+
+        .pieces-section-inner {
+            padding: 12px 16px 14px;
+        }
+
+        .pieces-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 8px;
+        }
+
+        .piece-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 5px;
+        }
+
+        .piece-item:last-child { margin-bottom: 0; }
+
+        .piece-num-badge {
+            width: 24px;
+            height: 24px;
+            background: var(--navy);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .piece-state-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .piece-state-badge svg { width: 11px; height: 11px; }
+
+        .state-fiable      { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-bd); }
+        .state-non-fiable  { background: var(--danger-bg);  color: var(--danger);  border: 1px solid var(--danger-bd); }
+        .state-a-verifier  { background: var(--warn-bg);    color: var(--warn);    border: 1px solid var(--warn-bd); }
+
+        .piece-note { font-size: 0.8rem; color: var(--text-2); flex: 1; font-style: italic; }
+
+        /* ── Empty State ── */
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 60px 24px;
+        }
+
+        .empty-state svg { width: 64px; height: 64px; color: var(--border); margin: 0 auto 16px; display: block; }
+        .empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+        .empty-state p { font-size: 0.875rem; color: var(--text-3); }
+
+        /* ── Action Buttons ── */
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            animation: slideUp 0.5s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: var(--radius-lg);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: 0.01em;
+        }
+
+        .action-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+        .action-btn:active { transform: scale(0.96); }
+
+        .btn-print {
+            background: var(--navy);
+            color: white;
+            box-shadow: 0 4px 14px rgba(27,58,92,0.25);
+        }
+
+        .btn-print:hover { background: var(--navy-light, #254E7A); }
+
+        .btn-reset {
+            background: var(--surface);
+            color: var(--text-1);
+            border: 1.5px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-reset:hover { background: var(--surface-2); border-color: var(--border-2, #BBC7D9); }
+
+        /* ── Print ── */
         @media print {
-            .no-print {
-                display: none;
-            }
+            header, .action-row, .pieces-section { display: none !important; }
+            body { background: white; }
+            .instrument-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+            .content { padding: 0; }
+        }
+
+        /* ── Responsive ── */
+        @media (min-width: 480px) {
+            .content { padding: 24px 20px; }
+            .kit-card { padding: 24px; }
+            .instr-main { padding: 16px 20px; }
+        }
+
+        @media (min-width: 640px) {
+            .content { padding: 28px 24px; }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-md">
-        <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <!-- Logo -->
-                    <img src="Assets/Logo.jpg" alt="SteriFlow Logo" class="h-40 w-50 object-contain">
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-green-600 font-medium text-sm sm:text-base">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </span>
-                </div>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
+        <div class="header-logo">
+            <img src="Assets/logo_no_bg.png" alt="SteriFlow">
+        </div>
+        <div class="header-badge">
+            <div class="header-badge-dot"></div>
+            Vérification
+        </div>
+    </div>
+</header>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <!-- KIT INFO -->
+    <div class="kit-card" id="kitCard">
+        <div class="kit-top">
+            <div>
+                <div class="kit-name" id="kitName">Chargement…</div>
+            </div>
+            <div class="kit-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
-        <!-- Kit Information Card -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
-            <div class="flex items-start justify-between mb-4">
-                <div class="flex-1">
-                    <h1 id="kitName" class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                        Nom de la Boîte
-                    </h1>
-                    <div class="flex flex-wrap gap-2 sm:gap-3 text-sm sm:text-base">
-                        <span id="service" class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                            Service
-                        </span>
-                        <span id="date" class="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            Date
-                        </span>
-                        <span id="kitId" class="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-medium font-mono text-xs">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                            </svg>
-                            ID
-                        </span>
-                    </div>
-                </div>
-                <div class="ml-4">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 sm:w-10 sm:h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Observations -->
-            <div id="observationsSection" class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded hidden">
-                <p class="text-sm font-semibold text-yellow-800 mb-1">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Observations:
-                </p>
-                <p id="observations" class="text-sm text-yellow-900"></p>
-            </div>
+        <div class="kit-tags">
+            <span class="tag tag-blue" id="serviceTag">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                Service
+            </span>
+            <span class="tag tag-gray" id="dateTag">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Date
+            </span>
+            <span class="tag tag-purple" id="kitIdTag">ID</span>
         </div>
-
-        <!-- Progress Bar -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
-            <div class="flex items-center justify-between mb-2">
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Progression</h2>
-                <span id="progressText" class="text-lg sm:text-xl font-bold text-blue-600">0 / 0</span>
+        <div class="obs-card" id="obsCard">
+            <div class="obs-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Observations
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-3 sm:h-4 overflow-hidden">
-                <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-green-500 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-            </div>
+            <div class="obs-text" id="obsText"></div>
         </div>
+    </div>
 
-        <!-- Instruments Checklist -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center">
-                <svg class="w-6 h-6 sm:w-7 sm:h-7 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
-                Liste des Instruments
-            </h2>
-            
-            <div id="instrumentsList" class="space-y-3 sm:space-y-4">
-                <!-- Instruments will be added here dynamically -->
-            </div>
+    <!-- PROGRESS -->
+    <div class="progress-card">
+        <div class="progress-header">
+            <span class="progress-title">Progression</span>
+            <span class="progress-count" id="progressCount">0 / 0</span>
         </div>
-
-        <!-- Empty State -->
-        <div id="emptyState" class="bg-white rounded-2xl shadow-lg p-8 sm:p-12 text-center hidden">
-            <svg class="w-20 h-20 sm:w-24 sm:h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-            <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucun instrument trouvé</h3>
-            <p class="text-gray-500">Le QR code scanné ne contient pas de données valides.</p>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar"></div>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 no-print">
-            <button onclick="window.print()" class="flex-1 px-6 py-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                Imprimer
-            </button>
-            <button id="resetBtn" class="flex-1 px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Réinitialiser
-            </button>
+        <div class="complete-banner" id="completeBanner">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <p>Vérification complète — Boîte validée ✓</p>
         </div>
-    </main>
+    </div>
 
-    <script>
-        // Parse URL parameters
-        function getDataFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            const dataParam = params.get('data');
-            
-            if (dataParam) {
-                try {
-                    return JSON.parse(decodeURIComponent(escape(atob(dataParam))));
-                } catch (e) {
-                    console.error('Error parsing data:', e);
-                    return null;
-                }
-            }
-            return null;
+    <!-- INSTRUMENTS -->
+    <div class="instruments-section">
+        <div class="section-title">Instruments à vérifier</div>
+        <div id="instrumentsList"></div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+        <h3>Données invalides</h3>
+        <p>Le QR code scanné ne contient pas de données valides.</p>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="action-row">
+        <button class="action-btn btn-print" onclick="window.print()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Imprimer
+        </button>
+        <button class="action-btn btn-reset" id="resetBtn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Réinitialiser
+        </button>
+    </div>
+
+</div>
+
+<script>
+    // ── Parse URL data ──
+    function getDataFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const d = params.get('data');
+        if (!d) return null;
+        try { return JSON.parse(decodeURIComponent(escape(atob(d)))); }
+        catch(e) { return null; }
+    }
+
+    // ── State ──
+    let checkedSet = new Set();
+    let totalCount = 0;
+
+    // ── Init ──
+    function init() {
+        const data = getDataFromURL();
+
+        if (!data || !data.instruments || !data.instruments.length) {
+            document.getElementById('kitCard').style.display = 'none';
+            document.querySelector('.progress-card').style.display = 'none';
+            document.querySelector('.instruments-section').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+            return;
         }
 
-        // State
-        let checkedInstruments = new Set();
-        let totalInstruments = 0;
+        // Kit info
+        document.getElementById('kitName').textContent = data.kitName || 'Boîte Médicale';
+        document.getElementById('serviceTag').innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
+            ${data.service || 'Service'}`;
+        document.getElementById('dateTag').innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            ${data.date || new Date().toLocaleDateString('fr-FR')}`;
+        document.getElementById('kitIdTag').textContent = data.kitId || 'N/A';
 
-        // Initialize page
-        function initializePage() {
-            const data = getDataFromURL();
-            
-            if (!data || !data.instruments || data.instruments.length === 0) {
-                document.getElementById('emptyState').classList.remove('hidden');
-                document.querySelector('main > div:first-child').classList.add('hidden');
-                document.querySelector('main > div:nth-child(2)').classList.add('hidden');
-                document.querySelector('main > div:nth-child(3)').classList.add('hidden');
-                return;
-            }
-
-            // Set kit information
-            document.getElementById('kitName').textContent = data.kitName || 'Boîte Médicale';
-            document.getElementById('service').textContent = data.service || 'Service';
-            document.getElementById('date').textContent = data.date || new Date().toLocaleDateString('fr-FR');
-            document.getElementById('kitId').textContent = data.kitId || 'N/A';
-
-            // Set observations if available
-            if (data.observations && data.observations.trim()) {
-                document.getElementById('observations').textContent = data.observations;
-                document.getElementById('observationsSection').classList.remove('hidden');
-            }
-
-            // Render instruments
-            totalInstruments = data.instruments.length;
-            renderInstruments(data.instruments);
-            updateProgress();
+        if (data.observations && data.observations.trim()) {
+            document.getElementById('obsText').textContent = data.observations;
+            document.getElementById('obsCard').style.display = 'block';
         }
 
-        // Render instruments list
-        function renderInstruments(instruments) {
-            const container = document.getElementById('instrumentsList');
-            container.innerHTML = '';
+        totalCount = data.instruments.length;
+        renderInstruments(data.instruments);
+        updateProgress();
+    }
 
-            instruments.forEach((instrument, index) => {
-                const card = document.createElement('div');
-                card.className = 'instrument-card border-2 border-gray-200 rounded-xl p-4 sm:p-5 cursor-pointer transition-all duration-300 hover:shadow-md active:scale-98';
-                card.onclick = () => toggleInstrument(index);
+    // ── Render instruments ──
+    function renderInstruments(instruments) {
+        const list = document.getElementById('instrumentsList');
+        list.innerHTML = '';
 
-                const stateColor = {
-                    'fiable': 'bg-green-100 text-green-800',
-                    'non fiable': 'bg-red-100 text-red-800',
-                    'a verifier': 'bg-yellow-100 text-yellow-800'
-                }[instrument.state] || 'bg-gray-100 text-gray-800';
+        instruments.forEach((instr, idx) => {
+            const card = document.createElement('div');
+            card.className = 'instrument-card';
+            card.dataset.idx = idx;
+            // Stagger animation
+            card.style.animation = `slideUp 0.45s ${0.04 + idx * 0.06}s cubic-bezier(0.16, 1, 0.3, 1) both`;
 
-                card.innerHTML = `
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-3 sm:space-x-4 flex-1">
-                            <div class="checkmark flex-shrink-0 mt-1">
-                                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-3 border-gray-300 flex items-center justify-center transition-all">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white hidden" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2 break-words">
-                                    ${instrument.name}
-                                </h3>
-                                <div class="flex flex-wrap gap-2 text-xs sm:text-sm">
-                                    <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                                        </svg>
-                                        Quantité: ${instrument.quantity}
-                                    </span>
-                                    <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full ${stateColor} font-medium">
-                                        ${instrument.state}
-                                    </span>
-                                    ${instrument.available ? 
-                                        '<span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-green-100 text-green-800 font-medium"><svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Disponible</span>' : 
-                                        '<span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-medium">Non disponible</span>'
-                                    }
-                                </div>
-                                ${instrument.comment ? `
-                                    <p class="mt-2 text-xs sm:text-sm text-gray-600 italic">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                        </svg>
-                                        ${instrument.comment}
-                                    </p>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
+            const hasPieces = instr.pieces && instr.pieces.length > 1;
+            const stateMap = { 'fiable': 'state-fiable', 'non fiable': 'state-non-fiable', 'a verifier': 'state-a-verifier' };
+            const stateLabel = { 'fiable': 'Fiable', 'non fiable': 'Non fiable', 'a verifier': 'À vérifier' };
+            const stateIcon = {
+                'fiable':     '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>',
+                'non fiable': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>',
+                'a verifier': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            };
 
-                container.appendChild(card);
-            });
-        }
+            // Overall status for single pieces
+            const overallState = instr.pieces?.[0]?.state || 'fiable';
 
-        // Toggle instrument check
-        function toggleInstrument(index) {
-            const cards = document.querySelectorAll('.instrument-card');
-            const card = cards[index];
-            const checkmark = card.querySelector('.checkmark > div');
-            const svg = checkmark.querySelector('svg');
-
-            if (checkedInstruments.has(index)) {
-                checkedInstruments.delete(index);
-                card.classList.remove('checked');
-                checkmark.classList.remove('bg-green-500', 'border-green-500');
-                checkmark.classList.add('border-gray-300');
-                svg.classList.add('hidden');
-            } else {
-                checkedInstruments.add(index);
-                card.classList.add('checked');
-                checkmark.classList.remove('border-gray-300');
-                checkmark.classList.add('bg-green-500', 'border-green-500');
-                svg.classList.remove('hidden');
-            }
-
-            updateProgress();
-        }
-
-        // Update progress bar
-        function updateProgress() {
-            const progress = (checkedInstruments.size / totalInstruments) * 100;
-            document.getElementById('progressBar').style.width = `${progress}%`;
-            document.getElementById('progressText').textContent = `${checkedInstruments.size} / ${totalInstruments}`;
-
-            // Change color when complete
-            const progressBar = document.getElementById('progressBar');
-            if (progress === 100) {
-                progressBar.classList.remove('from-blue-500', 'to-green-500');
-                progressBar.classList.add('from-green-500', 'to-green-600');
-            } else {
-                progressBar.classList.remove('from-green-500', 'to-green-600');
-                progressBar.classList.add('from-blue-500', 'to-green-500');
-            }
-        }
-
-        // Reset functionality
-        document.getElementById('resetBtn').addEventListener('click', function() {
-            if (confirm('Êtes-vous sûr de vouloir réinitialiser la liste de vérification?')) {
-                checkedInstruments.clear();
-                document.querySelectorAll('.instrument-card').forEach(card => {
-                    card.classList.remove('checked');
-                    const checkmark = card.querySelector('.checkmark > div');
-                    const svg = checkmark.querySelector('svg');
-                    checkmark.classList.remove('bg-green-500', 'border-green-500');
-                    checkmark.classList.add('border-gray-300');
-                    svg.classList.add('hidden');
+            // Pieces HTML
+            let piecesHTML = '';
+            if (instr.pieces && instr.pieces.length > 0) {
+                piecesHTML = `<div class="pieces-section">
+                    <div class="pieces-section-inner">
+                        <div class="pieces-label">Détail par pièce</div>`;
+                instr.pieces.forEach((piece, pi) => {
+                    const cls = stateMap[piece.state] || 'state-fiable';
+                    const lbl = stateLabel[piece.state] || piece.state;
+                    const ico = stateIcon[piece.state] || stateIcon['fiable'];
+                    piecesHTML += `
+                    <div class="piece-item">
+                        <div class="piece-num-badge">${pi + 1}</div>
+                        <span class="piece-state-badge ${cls}">${ico}${lbl}</span>
+                        ${piece.note ? `<span class="piece-note">${escapeHtml(piece.note)}</span>` : ''}
+                    </div>`;
                 });
-                updateProgress();
+                piecesHTML += `</div></div>`;
             }
-        });
 
-        // Initialize on page load
-        initializePage();
-    </script>
+            card.innerHTML = `
+            <div class="instr-main">
+                <div class="check-circle">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="instr-info">
+                    <div class="instr-name">${escapeHtml(instr.name) || '<em style="color:var(--text-3)">Sans nom</em>'}</div>
+                    <div class="instr-tags">
+                        <span class="instr-tag tag-qty">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                            Qté: ${instr.quantity}
+                        </span>
+                        ${instr.available
+                            ? '<span class="instr-tag tag-avail"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Disponible</span>'
+                            : '<span class="instr-tag tag-unavail">Non disponible</span>'
+                        }
+                        ${(!hasPieces)
+                            ? `<span class="piece-state-badge ${stateMap[overallState] || 'state-fiable'}" style="padding:3px 8px;font-size:.72rem;">${stateIcon[overallState] || stateIcon.fiable}${stateLabel[overallState] || overallState}</span>`
+                            : `<span class="instr-tag" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);">${instr.pieces.length} pièces</span>`
+                        }
+                    </div>
+                    ${instr.comment ? `<div class="instr-comment">"${escapeHtml(instr.comment)}"</div>` : ''}
+                </div>
+                ${hasPieces ? `<div class="instr-chevron"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>` : ''}
+            </div>
+            ${piecesHTML}`;
+
+            // ── Touch/Click: check OR expand ──
+            const mainRow = card.querySelector('.instr-main');
+            const chevron = card.querySelector('.instr-chevron');
+
+            if (hasPieces) {
+                // Chevron toggles expanded
+                chevron.addEventListener('click', e => {
+                    e.stopPropagation();
+                    card.classList.toggle('expanded');
+                });
+                // Tapping main row (not chevron) toggles checked
+                mainRow.addEventListener('click', e => {
+                    if (e.target.closest('.instr-chevron')) return;
+                    toggleCheck(card, idx);
+                });
+            } else {
+                card.addEventListener('click', () => toggleCheck(card, idx));
+            }
+
+            list.appendChild(card);
+        });
+    }
+
+    function toggleCheck(card, idx) {
+        card.classList.add('checking');
+        card.addEventListener('animationend', () => card.classList.remove('checking'), { once: true });
+
+        if (checkedSet.has(idx)) {
+            checkedSet.delete(idx);
+            card.classList.remove('checked');
+        } else {
+            checkedSet.add(idx);
+            card.classList.add('checked');
+        }
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const pct = totalCount > 0 ? (checkedSet.size / totalCount) * 100 : 0;
+        const bar = document.getElementById('progressBar');
+        bar.style.width = pct + '%';
+        bar.classList.toggle('complete', pct === 100);
+        document.getElementById('progressCount').textContent = `${checkedSet.size} / ${totalCount}`;
+        document.getElementById('completeBanner').classList.toggle('show', pct === 100);
+    }
+
+    // ── Reset ──
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        if (!confirm('Réinitialiser la liste de vérification?')) return;
+        checkedSet.clear();
+        document.querySelectorAll('.instrument-card').forEach(c => c.classList.remove('checked'));
+        updateProgress();
+    });
+
+    function escapeHtml(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Go ──
+    init();
+</script>
 </body>
 </html>

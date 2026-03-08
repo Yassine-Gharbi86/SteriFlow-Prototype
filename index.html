@@ -3,479 +3,1185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SteriFlow - Créer/Modifier une Boîte</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>SteriFlow — Créer / Modifier une Boîte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="config.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:        #1B3A5C;
+            --navy-deep:   #102742;
+            --navy-light:  #254E7A;
+            --teal:        #177A7A;
+            --bg:          #EEF2F8;
+            --surface:     #FFFFFF;
+            --surface-2:   #F7F9FC;
+            --border:      #D4DCE9;
+            --border-2:    #BBC7D9;
+            --text-1:      #141E2D;
+            --text-2:      #4A5A6E;
+            --text-3:      #7B8FA3;
+            --success:     #1A6B45;
+            --success-bg:  #EAF5EF;
+            --success-bd:  #A3CEBC;
+            --warn:        #7B5A10;
+            --warn-bg:     #FEF9EC;
+            --warn-bd:     #DFC080;
+            --danger:      #8B2020;
+            --danger-bg:   #FEF2F2;
+            --danger-bd:   #EBA8A8;
+            --radius:      8px;
+            --radius-lg:   12px;
+            --shadow-sm:   0 1px 4px rgba(20,30,45,0.07);
+            --shadow:      0 4px 16px rgba(20,30,45,0.09);
+            --shadow-lg:   0 8px 32px rgba(20,30,45,0.13);
+            --transition:  0.22s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        /* Custom select dropdown styling */
-        select {
+
+        html, body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-logo img {
+            height: 160px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .header-title {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-2);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .nav-btn:hover {
+            background: var(--surface-2);
+            border-color: var(--border-2);
+            color: var(--text-1);
+        }
+
+        .nav-btn svg { width: 15px; height: 15px; }
+
+        /* ── Main Layout ── */
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 32px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Cards / Sections ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-header h3 svg { width: 16px; height: 16px; color: var(--navy); }
+
+        .card-body { padding: 20px; }
+
+        /* ── Top Controls ── */
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group { position: relative; }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 5px;
+        }
+
+        .form-select,
+        .form-input {
+            width: 100%;
+            padding: 9px 36px 9px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-            background-position: right 0.5rem center;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%237B8FA3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 8px center;
             background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
+            background-size: 18px;
+        }
+
+        .form-input { padding: 9px 12px; }
+
+        .form-select:focus, .form-input:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(27,58,92,0.09);
+        }
+
+        /* ── Search Row ── */
+        .search-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .search-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-wrap svg {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: var(--text-3);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 9px 12px 9px 36px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(27,58,92,0.09);
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 18px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+
+        .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: var(--navy);
+            color: #fff;
+            border-color: var(--navy);
+        }
+        .btn-primary:hover { background: var(--navy-light); border-color: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--navy);
+            border-color: var(--navy);
+        }
+        .btn-outline:hover { background: rgba(27,58,92,0.05); transform: translateY(-1px); }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border-color: var(--danger-bd);
+        }
+        .btn-danger:hover { background: var(--danger-bg); transform: translateY(-1px); }
+
+        .btn-icon {
+            padding: 8px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            color: var(--text-2);
+            border-radius: var(--radius);
+        }
+        .btn-icon:hover { background: var(--border); color: var(--text-1); }
+        .btn-icon svg { width: 15px; height: 15px; display: block; }
+
+        .btn-add-instrument {
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-add-instrument:hover {
+            background: var(--navy-light);
+            box-shadow: 0 4px 14px rgba(27,58,92,0.28);
+            transform: translateY(-1px);
+        }
+        .btn-add-instrument svg { width: 18px; height: 18px; }
+
+        /* ── Instruments Table ── */
+        .table-wrap {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .instruments-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .instruments-table thead {
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .instruments-table th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+
+        .instruments-table th.center { text-align: center; }
+
+        .instruments-table tbody tr.instrument-main {
+            border-bottom: 1px solid var(--border);
+            animation: rowFadeIn 0.3s ease both;
+            transition: background var(--transition);
+        }
+
+        .instruments-table tbody tr.instrument-main:hover {
+            background: var(--surface-2);
+        }
+
+        .instruments-table tbody tr.instrument-main:last-child { border-bottom: none; }
+
+        @keyframes rowFadeIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .instruments-table td {
+            padding: 10px 14px;
+            vertical-align: middle;
+        }
+
+        .instruments-table td.center { text-align: center; }
+
+        /* ── Piece Sub-rows ── */
+        tr.pieces-container {
+            background: #F9FBFD;
+            border-bottom: 2px solid var(--border);
+        }
+
+        tr.pieces-container td { padding: 0; }
+
+        .pieces-inner {
+            padding: 8px 14px 12px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeIn 0.25s ease both;
+        }
+
+        .piece-header {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            padding-bottom: 4px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .piece-header::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .piece-row {
+            display: grid;
+            grid-template-columns: 80px 160px 1fr;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .piece-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .piece-num {
+            width: 22px;
+            height: 22px;
+            background: var(--navy);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* ── Inline Inputs ── */
+        .table-input {
+            width: 100%;
+            padding: 6px 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-1);
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        .table-input:focus, .table-input:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .table-input:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 2px rgba(27,58,92,0.09);
+            background: var(--surface);
+        }
+
+        .table-select {
+            padding: 5px 28px 5px 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8125rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%237B8FA3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 6px center;
+            background-repeat: no-repeat;
+            background-size: 15px;
+            cursor: pointer;
+            transition: border-color var(--transition);
+        }
+
+        .table-select:focus { border-color: var(--navy); outline: none; }
+
+        /* State badge colors */
+        .table-select.state-fiable { border-color: var(--success-bd); background-color: var(--success-bg); color: var(--success); }
+        .table-select.state-non_fiable { border-color: var(--danger-bd); background-color: var(--danger-bg); color: var(--danger); }
+        .table-select.state-a_verifier { border-color: var(--warn-bd); background-color: var(--warn-bg); color: var(--warn); }
+
+        /* ── Quantity Control ── */
+        .qty-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-2);
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+
+        .qty-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
+        .qty-btn svg { width: 12px; height: 12px; }
+
+        .qty-value {
+            width: 28px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-1);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* ── Toggle Switch ── */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--border-2);
+            border-radius: 20px;
+            transition: background var(--transition);
+        }
+
+        .toggle-slider::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: transform var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .toggle-switch input:checked + .toggle-slider { background: var(--success); }
+        .toggle-switch input:checked + .toggle-slider::after { transform: translateX(16px); }
+
+        /* ── Delete row button ── */
+        .delete-row-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-3);
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            transition: all var(--transition);
+        }
+        .delete-row-btn:hover { color: var(--danger); background: var(--danger-bg); }
+        .delete-row-btn svg { width: 15px; height: 15px; }
+
+        /* ── Empty table state ── */
+        .table-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-3);
+        }
+
+        .table-empty svg { width: 36px; height: 36px; margin: 0 auto 10px; display: block; opacity: 0.5; }
+        .table-empty p { font-size: 0.875rem; }
+
+        /* ── Bottom row (add + actions) ── */
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .instrument-count {
+            font-size: 0.8125rem;
+            color: var(--text-3);
+        }
+
+        .instrument-count strong { color: var(--text-1); font-weight: 600; }
+
+        /* ── Observations ── */
+        .form-textarea {
+            width: 100%;
+            padding: 9px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .form-textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
+
+        /* ── Info Grid ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .info-item .info-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+        .info-item .info-value { font-size: 0.875rem; color: var(--text-1); font-family: 'IBM Plex Mono', monospace; }
+
+        /* ── Action Buttons Row ── */
+        .action-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ── Right Sidebar ── */
+        .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+        .qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-2);
+            border-radius: var(--radius);
+            padding: 24px;
+            min-height: 200px;
+        }
+
+        .qr-placeholder {
+            text-align: center;
+            color: var(--text-3);
+        }
+
+        .qr-placeholder svg { width: 60px; height: 60px; margin: 0 auto 10px; display: block; opacity: 0.35; }
+        .qr-placeholder p { font-size: 0.8125rem; }
+
+        #qrcode canvas { border-radius: 4px; display: block; }
+
+        /* ── Sidebar Info ── */
+        .sidebar-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8125rem;
+        }
+
+        .sidebar-info-row:last-child { border-bottom: none; }
+        .sidebar-info-row .si-label { color: var(--text-3); font-weight: 500; }
+        .sidebar-info-row .si-value { color: var(--text-1); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; text-align: right; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ── Notification ── */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 9999;
+            box-shadow: var(--shadow-lg);
+            animation: notifIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .notification svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .notification.success { background: #1A6B45; color: #fff; }
+        .notification.error   { background: var(--danger); color: #fff; }
+        .notification.info    { background: var(--navy); color: #fff; }
+
+        @keyframes notifIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes notifOut {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(-10px); }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-8 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <!-- Logo -->
-                <img src="Assets/Logo.jpg" alt="SteriFlow Logo" class="h-40 w-50 object-contain">
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-logo">
+        <img src="Assets/logo_no_bg.png" alt="SteriFlow">
+    </div>
+    <div class="header-title">Créer / Modifier une Boîte</div>
+    <nav class="header-nav">
+        <a href="login.html" class="nav-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Déconnexion
+        </a>
+    </nav>
+</header>
+
+<!-- MAIN -->
+<main>
+    <!-- LEFT: FORM -->
+    <div class="left-col">
+
+        <!-- BOX INFO -->
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <h3>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V11"/></svg>
+                    Informations de la Boîte
+                </h3>
             </div>
-            <h1 class="text-2xl font-semibold text-gray-800">CRÉER / MODIFIER UNE BOÎTE</h1>
-            <div class="w-48"></div> <!-- Spacer for centering -->
+            <div class="card-body">
+                <div class="controls-row">
+                    <div class="form-group">
+                        <label class="form-label">Nom de la Boîte</label>
+                        <select id="kitName" class="form-select">
+                            <option value="">Sélectionner…</option>
+                            <option>Boîte Chirurgie Générale</option>
+                            <option>Boîte Orthopédie</option>
+                            <option>Boîte ORL</option>
+                            <option>Boîte Laparoscopie</option>
+                            <option>Boîte Cardiovasculaire</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Service</label>
+                        <select id="service" class="form-select">
+                            <option value="">Sélectionner…</option>
+                            <option>Bloc Opératoire A</option>
+                            <option>Bloc Opératoire B</option>
+                            <option>Chirurgie Ambulatoire</option>
+                            <option>Urgences</option>
+                            <option>Réanimation</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="search-wrap">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un instrument…">
+                    </div>
+                    <select id="blocOperatoire" class="form-select" style="width:auto;padding:9px 32px 9px 12px;">
+                        <option value="">Tous les blocs</option>
+                        <option>Bloc A</option>
+                        <option>Bloc B</option>
+                        <option>Bloc C</option>
+                    </select>
+                </div>
+            </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column - Form -->
-            <div class="lg:col-span-2">
-                <!-- Dropdowns -->
-                <div class="grid grid-cols-2 gap-4 mb-8">
-                    <div>
-                        <select id="kitName" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Nom du Boîte</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select id="service" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>service</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Search Bar -->
-                <div class="mb-8">
-                    <div class="flex items-center space-x-2">
-                        <div class="flex-1 relative">
-                            <input 
-                                type="text" 
-                                id="searchInput"
-                                placeholder="Search..." 
-                                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-                        </div>
-                        <button id="searchBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </button>
-                        <select id="blocOperatoire" class="px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Bloc opératoire</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Instruments Table -->
-                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
-                    <table class="w-full">
-                        <thead class="bg-gray-50 border-b border-gray-200">
+        <!-- INSTRUMENTS TABLE -->
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <h3>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    Liste des Instruments
+                </h3>
+                <span class="instrument-count"><strong id="instrCount">0</strong> instrument(s)</span>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrap" style="border:none;border-radius:0;margin:0;">
+                    <table class="instruments-table">
+                        <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">INSTRUMENT</th>
-                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">disponibilité</th>
-                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">QUANTITÉ</th>
-                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">ÉTAT</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">commentaire</th>
+                                <th>Instrument</th>
+                                <th class="center" style="width:80px;">Disponible</th>
+                                <th class="center" style="width:110px;">Quantité</th>
+                                <th style="width:200px;">Commentaire</th>
+                                <th class="center" style="width:44px;"></th>
                             </tr>
                         </thead>
-                        <tbody id="instrumentsTable" class="divide-y divide-gray-200">
-                            <!-- Instruments will be added here dynamically -->
-                        </tbody>
+                        <tbody id="instrumentsTable"></tbody>
                     </table>
                 </div>
-
-                <!-- Add Button -->
-                <div class="flex justify-end mb-6">
-                    <button id="addInstrumentBtn" class="w-12 h-12 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Additional Info -->
-                <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-4">Informations complémentaires</h3>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="text-sm">
-                            <span class="text-gray-600">Créée / modifiée:</span>
-                            <span class="ml-2 text-gray-800" id="dateCreated">-</span>
-                        </div>
-                        <div class="text-sm">
-                            <span class="text-gray-600">ID Unique:</span>
-                            <span class="ml-2 text-gray-800 font-mono text-xs" id="uniqueId">-</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-600 mb-2">Observations:</label>
-                        <textarea id="observations" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex justify-center space-x-4">
-                    <button id="generateQRBtn" class="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                        GÉNÉRER QR CODE
-                    </button>
-                    <button id="saveBtn" class="px-8 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors">
-                        SAUVEGARDER
-                    </button>
-                    <button id="deleteBtn" class="px-8 py-3 bg-white border-2 border-red-500 text-red-500 rounded-lg font-medium hover:bg-red-50 transition-colors">
-                        SUPPRIMER
-                    </button>
-                </div>
             </div>
+            <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+                <button id="addInstrumentBtn" class="btn-add-instrument" title="Ajouter un instrument">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                </button>
+            </div>
+        </div>
 
-            <!-- Right Column - QR Code -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg border border-gray-200 p-6 sticky top-8">
-                    <!-- QR Code -->
-                    <div id="qrcodeContainer" class="flex justify-center items-center mb-6 bg-gray-50 rounded-lg p-8">
-                        <div id="qrcode" class="inline-block"></div>
-                        <div id="qrPlaceholder" class="text-gray-400 text-center">
-                            <svg class="w-48 h-48 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                            </svg>
-                            <p class="text-sm">Le QR code apparaîtra ici</p>
-                        </div>
+        <!-- OBSERVATIONS & META -->
+        <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+                <h3>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Informations complémentaires
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="info-grid" style="margin-bottom:14px;">
+                    <div class="info-item">
+                        <div class="info-label">Créée / modifiée</div>
+                        <div class="info-value" id="dateCreated">—</div>
                     </div>
-
-                    <!-- Download QR Button -->
-                    <div id="downloadQRSection" class="mb-4 hidden">
-                        <button id="downloadQRBtn" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-2">
-                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Télécharger QR Code
-                        </button>
-                        <button id="testLinkBtn" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors text-sm">
-                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            Tester le lien
-                        </button>
+                    <div class="info-item">
+                        <div class="info-label">ID Unique</div>
+                        <div class="info-value" id="uniqueId">—</div>
                     </div>
-
-                    <!-- Info -->
-                    <div class="border-t border-gray-200 pt-4">
-                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Informations complémentaires</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Créée / modifiée:</span>
-                                <span class="text-gray-800" id="dateCreatedSidebar">-</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">ID Unique:</span>
-                                <span class="text-gray-800 font-mono text-xs" id="uniqueIdSidebar">-</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Responsable:</span>
-                                <span class="text-gray-800" id="responsable">-</span>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Observations</label>
+                    <textarea id="observations" class="form-textarea" placeholder="Notes, remarques, instructions spéciales…"></textarea>
                 </div>
             </div>
         </div>
-    </main>
 
-    <script>
-        // State management
-        let instruments = [];
-        let qrGenerated = false;
-        let kitUniqueId = '';
-        let kitCreationDate = '';
-        let currentViewerURL = '';
+        <!-- ACTION BUTTONS -->
+        <div class="action-row">
+            <button id="generateQRBtn" class="btn btn-primary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                Générer QR Code
+            </button>
+            <button id="saveBtn" class="btn btn-outline">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                Sauvegarder
+            </button>
+            <button id="deleteBtn" class="btn btn-danger">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Supprimer
+            </button>
+        </div>
+    </div>
 
-        // Don't initialize date - it will be set when QR is generated
+    <!-- RIGHT: SIDEBAR -->
+    <div class="sidebar">
 
-        // Add instrument functionality
-        document.getElementById('addInstrumentBtn').addEventListener('click', function() {
-            addInstrumentRow();
-        });
+        <!-- QR CODE -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4"/></svg>
+                    QR Code
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="qr-container" id="qrcodeContainer">
+                    <div id="qrcode"></div>
+                    <div id="qrPlaceholder" class="qr-placeholder">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                        <p>Apparaîtra après génération</p>
+                    </div>
+                </div>
 
-        function addInstrumentRow(data = {}) {
-            const row = {
-                id: Date.now(),
-                name: data.name || '',
-                available: data.available || false,
-                quantity: data.quantity || 1,
-                state: data.state || 'fiable',
-                comment: data.comment || ''
-            };
-            
-            instruments.push(row);
-            renderTable();
+                <div id="qrActions" class="hidden" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                    <button id="downloadQRBtn" class="btn btn-primary" style="width:100%;justify-content:center;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Télécharger
+                    </button>
+                    <button id="testLinkBtn" class="btn btn-outline" style="width:100%;justify-content:center;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        Tester le lien
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR INFO -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Métadonnées
+                </h3>
+            </div>
+            <div class="card-body" style="padding:12px 16px;">
+                <div class="sidebar-info-row">
+                    <span class="si-label">Créée / modifiée</span>
+                    <span class="si-value" id="dateCreatedSidebar">—</span>
+                </div>
+                <div class="sidebar-info-row">
+                    <span class="si-label">ID Unique</span>
+                    <span class="si-value" id="uniqueIdSidebar">—</span>
+                </div>
+                <div class="sidebar-info-row">
+                    <span class="si-label">Responsable</span>
+                    <span class="si-value" id="responsable">Admin</span>
+                </div>
+                <div class="sidebar-info-row">
+                    <span class="si-label">Instruments</span>
+                    <span class="si-value" id="instrCountSidebar">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<style>
+    .hidden { display: none !important; }
+</style>
+
+<script>
+    // ── State ──
+    let instruments = [];
+    let kitUniqueId = '';
+    let kitCreationDate = '';
+    let currentViewerURL = '';
+
+    // ── Helpers ──
+    function generateId() {
+        const now = new Date();
+        const d = now.getFullYear() +
+            String(now.getMonth() + 1).padStart(2, '0') +
+            String(now.getDate()).padStart(2, '0');
+        const r = Math.random().toString(36).substring(2, 8).toUpperCase();
+        return `KIT-${d}-${r}`;
+    }
+
+    function setKitMeta() {
+        if (!kitUniqueId) {
+            kitUniqueId = generateId();
+            kitCreationDate = new Date().toLocaleDateString('fr-FR');
         }
+        document.getElementById('dateCreated').textContent = kitCreationDate;
+        document.getElementById('dateCreatedSidebar').textContent = kitCreationDate;
+        document.getElementById('uniqueId').textContent = kitUniqueId;
+        document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
+    }
 
-        function renderTable() {
-            const tbody = document.getElementById('instrumentsTable');
-            tbody.innerHTML = '';
+    // ── State class for select ──
+    function stateClass(state) {
+        return state === 'fiable' ? 'state-fiable' :
+               state === 'non fiable' ? 'state-non_fiable' :
+               state === 'a verifier' ? 'state-a_verifier' : '';
+    }
 
-            instruments.forEach((instrument, index) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-gray-50';
-                tr.innerHTML = `
-                    <td class="px-6 py-4">
-                        <input 
-                            type="text" 
-                            value="${instrument.name}"
-                            placeholder="Nom de l'instrument"
-                            class="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onchange="updateInstrument(${index}, 'name', this.value)"
-                        >
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <input 
-                            type="checkbox" 
-                            ${instrument.available ? 'checked' : ''}
-                            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                            onchange="updateInstrument(${index}, 'available', this.checked)"
-                        >
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center justify-center space-x-2">
-                            <button onclick="decrementQuantity(${index})" class="w-6 h-6 bg-gray-200 rounded hover:bg-gray-300 flex items-center justify-center">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                </svg>
-                            </button>
-                            <span class="w-8 text-center font-medium">${instrument.quantity}</span>
-                            <button onclick="incrementQuantity(${index})" class="w-6 h-6 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <select 
-                            class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            onchange="updateInstrument(${index}, 'state', this.value)"
-                        >
-                            <option value="fiable" ${instrument.state === 'fiable' ? 'selected' : ''}>fiable</option>
-                            <option value="non fiable" ${instrument.state === 'non fiable' ? 'selected' : ''}>non fiable</option>
-                            <option value="a verifier" ${instrument.state === 'a verifier' ? 'selected' : ''}>à vérifier</option>
-                        </select>
-                    </td>
-                    <td class="px-6 py-4">
-                        <input 
-                            type="text" 
-                            value="${instrument.comment}"
-                            placeholder="Commentaire"
-                            class="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            onchange="updateInstrument(${index}, 'comment', this.value)"
-                        >
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+    // ── Add instrument ──
+    document.getElementById('addInstrumentBtn').addEventListener('click', () => addInstrumentRow());
 
-        function updateInstrument(index, field, value) {
-            instruments[index][field] = value;
-        }
-
-        function incrementQuantity(index) {
-            instruments[index].quantity++;
-            renderTable();
-        }
-
-        function decrementQuantity(index) {
-            if (instruments[index].quantity > 1) {
-                instruments[index].quantity--;
-                renderTable();
-            }
-        }
-
-        // Generate QR Code
-        document.getElementById('generateQRBtn').addEventListener('click', function() {
-            const kitName = document.getElementById('kitName').value;
-            const service = document.getElementById('service').value;
-            const observations = document.getElementById('observations').value;
-
-            if (instruments.length === 0) {
-                alert('Veuillez ajouter au moins un instrument avant de générer le QR code.');
-                return;
-            }
-
-            // Generate unique ID and date only when QR is generated
-            if (!kitUniqueId) {
-                // Create unique ID: KIT-YYYYMMDD-RANDOM
-                const now = new Date();
-                const dateStr = now.getFullYear() + 
-                    String(now.getMonth() + 1).padStart(2, '0') + 
-                    String(now.getDate()).padStart(2, '0');
-                const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
-                kitUniqueId = `KIT-${dateStr}-${randomStr}`;
-                
-                // Set creation date
-                kitCreationDate = now.toLocaleDateString('fr-FR');
-                
-                // Update UI
-                document.getElementById('dateCreated').textContent = kitCreationDate;
-                document.getElementById('dateCreatedSidebar').textContent = kitCreationDate;
-                document.getElementById('uniqueId').textContent = kitUniqueId;
-                document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
-            }
-
-            // Clear previous QR code
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-            document.getElementById('qrPlaceholder').style.display = 'none';
-
-            // Prepare data
-            const data = {
-                kitId: kitUniqueId,
-                kitName,
-                service,
-                instruments,
-                observations,
-                date: kitCreationDate
-            };
-
-            // Encode data as URL parameter
-            const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-            
-            // Use the config function to get the correct viewer URL
-            const viewerURL = getViewerUrl(encodedData);
-            currentViewerURL = viewerURL; // Store for test link button
-
-            // Generate QR code using QRious
-            const canvas = document.createElement('canvas');
-            const qr = new QRious({
-                element: canvas,
-                value: viewerURL,
-                size: 320,
-                level: 'L'
-            });
-            
-            qrcodeDiv.appendChild(canvas);
-            qrGenerated = true;
-            
-            // Show download button
-            document.getElementById('downloadQRSection').classList.remove('hidden');
-            
-            // Show success message with unique ID
-            showNotification(`QR Code généré avec succès! ID: ${kitUniqueId}`, 'success');
-            
-            console.log('QR Code URL:', viewerURL); // For debugging
-        });
-
-        // Download QR Code
-        document.getElementById('downloadQRBtn').addEventListener('click', function() {
-            const canvas = document.querySelector('#qrcode canvas');
-            if (canvas) {
-                const link = document.createElement('a');
-                link.download = `SteriFlow_${kitUniqueId}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                showNotification('QR Code téléchargé!', 'success');
-            }
-        });
-
-        // Test link button - opens viewer in new tab
-        document.getElementById('testLinkBtn').addEventListener('click', function() {
-            if (currentViewerURL) {
-                window.open(currentViewerURL, '_blank');
-            } else {
-                alert('Veuillez d\'abord générer le QR code');
-            }
-        });
-
-        // Save functionality
-        document.getElementById('saveBtn').addEventListener('click', function() {
-            const kitName = document.getElementById('kitName').value;
-            const service = document.getElementById('service').value;
-            const observations = document.getElementById('observations').value;
-
-            // Generate unique ID and date if not already generated
-            if (!kitUniqueId) {
-                const now = new Date();
-                const dateStr = now.getFullYear() + 
-                    String(now.getMonth() + 1).padStart(2, '0') + 
-                    String(now.getDate()).padStart(2, '0');
-                const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
-                kitUniqueId = `KIT-${dateStr}-${randomStr}`;
-                kitCreationDate = now.toLocaleDateString('fr-FR');
-                
-                // Update UI
-                document.getElementById('dateCreated').textContent = kitCreationDate;
-                document.getElementById('dateCreatedSidebar').textContent = kitCreationDate;
-                document.getElementById('uniqueId').textContent = kitUniqueId;
-                document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
-            }
-
-            const data = {
-                kitId: kitUniqueId,
-                kitName,
-                service,
-                instruments,
-                observations,
-                date: kitCreationDate
-            };
-
-            // Save to localStorage with unique ID as key
-            localStorage.setItem(`kit_${kitUniqueId}`, JSON.stringify(data));
-
-            showNotification(`Boîte sauvegardée avec succès! ID: ${kitUniqueId}`, 'success');
-        });
-
-        // Delete functionality
-        document.getElementById('deleteBtn').addEventListener('click', function() {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette boîte?')) {
-                instruments = [];
-                kitUniqueId = '';
-                kitCreationDate = '';
-                renderTable();
-                document.getElementById('qrcode').innerHTML = '';
-                document.getElementById('qrPlaceholder').style.display = 'block';
-                document.getElementById('downloadQRSection').classList.add('hidden');
-                document.getElementById('observations').value = '';
-                document.getElementById('dateCreated').textContent = '-';
-                document.getElementById('dateCreatedSidebar').textContent = '-';
-                document.getElementById('uniqueId').textContent = '-';
-                document.getElementById('uniqueIdSidebar').textContent = '-';
-                showNotification('Boîte supprimée', 'info');
-            }
-        });
-
-        // Notification system
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50 ${
-                type === 'success' ? 'bg-green-500' : 
-                type === 'error' ? 'bg-red-500' : 
-                'bg-blue-500'
-            }`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        // Initialize with empty state
+    function addInstrumentRow(data = {}) {
+        const qty = data.quantity || 1;
+        const row = {
+            id: Date.now(),
+            name: data.name || '',
+            available: data.available !== undefined ? data.available : true,
+            quantity: qty,
+            pieces: data.pieces || Array.from({ length: qty }, () => ({ state: 'fiable', note: '' })),
+            comment: data.comment || ''
+        };
+        instruments.push(row);
         renderTable();
-    </script>
+    }
+
+    // ── Render ──
+    function renderTable() {
+        const tbody = document.getElementById('instrumentsTable');
+        tbody.innerHTML = '';
+        document.getElementById('instrCount').textContent = instruments.length;
+        document.getElementById('instrCountSidebar').textContent = instruments.length;
+
+        if (instruments.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="5">
+                <div class="table-empty">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <p>Aucun instrument. Cliquez + pour ajouter.</p>
+                </div>
+            </td>`;
+            tbody.appendChild(tr);
+            return;
+        }
+
+        instruments.forEach((instr, idx) => {
+            // ── Main row ──
+            const tr = document.createElement('tr');
+            tr.className = 'instrument-main';
+            tr.innerHTML = `
+                <td>
+                    <input type="text" class="table-input" value="${escapeHtml(instr.name)}"
+                        placeholder="Nom de l'instrument"
+                        onchange="instruments[${idx}].name = this.value">
+                </td>
+                <td class="center">
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${instr.available ? 'checked' : ''}
+                            onchange="instruments[${idx}].available = this.checked">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </td>
+                <td>
+                    <div class="qty-control">
+                        <button class="qty-btn" onclick="changeQty(${idx}, -1)">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                        </button>
+                        <span class="qty-value">${instr.quantity}</span>
+                        <button class="qty-btn" onclick="changeQty(${idx}, 1)">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    <input type="text" class="table-input" value="${escapeHtml(instr.comment)}"
+                        placeholder="Commentaire"
+                        onchange="instruments[${idx}].comment = this.value">
+                </td>
+                <td class="center">
+                    <button class="delete-row-btn" onclick="removeInstrument(${idx})" title="Supprimer">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // ── Pieces sub-row ──
+            const trPieces = document.createElement('tr');
+            trPieces.className = 'pieces-container';
+            let piecesHTML = `<td colspan="5"><div class="pieces-inner">
+                <div class="piece-header">État par pièce</div>`;
+            instr.pieces.forEach((piece, pi) => {
+                piecesHTML += `
+                <div class="piece-row">
+                    <div class="piece-label">
+                        <span class="piece-num">${pi + 1}</span> Pièce ${pi + 1}
+                    </div>
+                    <select class="table-select ${stateClass(piece.state)}"
+                        onchange="updatePiece(${idx}, ${pi}, 'state', this.value); this.className='table-select '+stateClass(this.value)">
+                        <option value="fiable" ${piece.state === 'fiable' ? 'selected' : ''}>✓ Fiable</option>
+                        <option value="non fiable" ${piece.state === 'non fiable' ? 'selected' : ''}>✗ Non fiable</option>
+                        <option value="a verifier" ${piece.state === 'a verifier' ? 'selected' : ''}>⚠ À vérifier</option>
+                    </select>
+                    <input type="text" class="table-input" value="${escapeHtml(piece.note)}"
+                        placeholder="Note sur cette pièce…"
+                        onchange="updatePiece(${idx}, ${pi}, 'note', this.value)"
+                        style="background:white;border-color:var(--border);">
+                </div>`;
+            });
+            piecesHTML += `</div></td>`;
+            trPieces.innerHTML = piecesHTML;
+            tbody.appendChild(trPieces);
+        });
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function changeQty(idx, delta) {
+        const instr = instruments[idx];
+        const newQty = Math.max(1, instr.quantity + delta);
+        instr.quantity = newQty;
+        if (newQty > instr.pieces.length) {
+            while (instr.pieces.length < newQty) instr.pieces.push({ state: 'fiable', note: '' });
+        } else {
+            instr.pieces = instr.pieces.slice(0, newQty);
+        }
+        renderTable();
+    }
+
+    function updatePiece(instrIdx, pieceIdx, field, value) {
+        instruments[instrIdx].pieces[pieceIdx][field] = value;
+    }
+
+    function removeInstrument(idx) {
+        instruments.splice(idx, 1);
+        renderTable();
+    }
+
+    function stateClass(state) {
+        return state === 'fiable' ? 'state-fiable' :
+               state === 'non fiable' ? 'state-non_fiable' :
+               'state-a_verifier';
+    }
+
+    // ── Generate QR ──
+    document.getElementById('generateQRBtn').addEventListener('click', () => {
+        if (instruments.length === 0) {
+            showNotification('Veuillez ajouter au moins un instrument.', 'error'); return;
+        }
+        setKitMeta();
+
+        const kitName = document.getElementById('kitName').value;
+        const service = document.getElementById('service').value;
+        const observations = document.getElementById('observations').value;
+
+        const data = { kitId: kitUniqueId, kitName, service, instruments, observations, date: kitCreationDate };
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+        const viewerURL = typeof getViewerUrl === 'function' ? getViewerUrl(encoded) : `viewer.html?data=${encoded}`;
+        currentViewerURL = viewerURL;
+
+        const qrcodeDiv = document.getElementById('qrcode');
+        qrcodeDiv.innerHTML = '';
+        document.getElementById('qrPlaceholder').classList.add('hidden');
+
+        const canvas = document.createElement('canvas');
+        new QRious({ element: canvas, value: viewerURL, size: 260, level: 'M', background: '#ffffff', foreground: '#1B3A5C' });
+        qrcodeDiv.appendChild(canvas);
+
+        document.getElementById('qrActions').classList.remove('hidden');
+        showNotification(`QR Code généré — ID: ${kitUniqueId}`, 'success');
+    });
+
+    // ── Download ──
+    document.getElementById('downloadQRBtn').addEventListener('click', () => {
+        const canvas = document.querySelector('#qrcode canvas');
+        if (canvas) {
+            const link = document.createElement('a');
+            link.download = `SteriFlow_${kitUniqueId || 'QR'}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            showNotification('QR Code téléchargé!', 'success');
+        }
+    });
+
+    document.getElementById('testLinkBtn').addEventListener('click', () => {
+        if (currentViewerURL) window.open(currentViewerURL, '_blank');
+        else showNotification('Veuillez d\'abord générer le QR code.', 'error');
+    });
+
+    // ── Save ──
+    document.getElementById('saveBtn').addEventListener('click', () => {
+        if (instruments.length === 0) { showNotification('Aucun instrument à sauvegarder.', 'error'); return; }
+        setKitMeta();
+        const data = {
+            kitId: kitUniqueId,
+            kitName: document.getElementById('kitName').value,
+            service: document.getElementById('service').value,
+            instruments,
+            observations: document.getElementById('observations').value,
+            date: kitCreationDate
+        };
+        localStorage.setItem(`kit_${kitUniqueId}`, JSON.stringify(data));
+        showNotification(`Boîte sauvegardée — ID: ${kitUniqueId}`, 'success');
+    });
+
+    // ── Delete ──
+    document.getElementById('deleteBtn').addEventListener('click', () => {
+        if (!confirm('Êtes-vous sûr de vouloir réinitialiser cette boîte?')) return;
+        instruments = []; kitUniqueId = ''; kitCreationDate = ''; currentViewerURL = '';
+        renderTable();
+        document.getElementById('qrcode').innerHTML = '';
+        document.getElementById('qrPlaceholder').classList.remove('hidden');
+        document.getElementById('qrActions').classList.add('hidden');
+        document.getElementById('observations').value = '';
+        ['dateCreated','dateCreatedSidebar','uniqueId','uniqueIdSidebar'].forEach(id => document.getElementById(id).textContent = '—');
+        showNotification('Boîte réinitialisée.', 'info');
+    });
+
+    // ── Notification ──
+    function showNotification(msg, type = 'info') {
+        const icons = {
+            success: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            error:   '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            info:    '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        };
+        const n = document.createElement('div');
+        n.className = `notification ${type}`;
+        n.innerHTML = `${icons[type]}<span>${msg}</span>`;
+        document.body.appendChild(n);
+        setTimeout(() => {
+            n.style.animation = 'notifOut 0.3s ease forwards';
+            setTimeout(() => n.remove(), 300);
+        }, 3500);
+    }
+
+    // Init
+    renderTable();
+</script>
 </body>
 </html>

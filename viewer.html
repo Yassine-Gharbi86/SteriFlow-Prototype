@@ -49,7 +49,7 @@
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
-        /* ── Header ── */
+        
         header {
             background: #ffffff;
     border-bottom: 1px solid var(--border);
@@ -69,10 +69,7 @@
     justify-content: space-between;
         }
 
-        .header-logo img {
-            height: 160px;
-            object-fit: contain;
-        }
+        .header-logo img { height: 160px; object-fit: contain; }
 
         .header-badge {
             display: flex;
@@ -102,14 +99,10 @@
             50% { opacity: 0.7; transform: scale(0.85); }
         }
 
-        /* ── Content ── */
-        .content {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 20px 16px;
-        }
+        
+        .content { max-width: 680px; margin: 0 auto; padding: 20px 16px; }
 
-        /* ── Kit Info Card ── */
+        
         .kit-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -125,13 +118,7 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        .kit-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
+        .kit-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 
         .kit-name {
             font-size: clamp(1.2rem, 5vw, 1.625rem);
@@ -154,12 +141,7 @@
         }
 
         .kit-icon svg { width: 24px; height: 24px; color: var(--success); }
-
-        .kit-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
+        .kit-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
         .tag {
             display: inline-flex;
@@ -172,12 +154,11 @@
         }
 
         .tag svg { width: 13px; height: 13px; flex-shrink: 0; }
-
         .tag-blue   { background: #EBF4FF; color: #1A4B8E; }
         .tag-gray   { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
         .tag-purple { background: #F3EEFF; color: #5B21B6; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; }
 
-        /* ── Observations ── */
+        
         .obs-card {
             background: var(--warn-bg);
             border: 1px solid var(--warn-bd);
@@ -203,7 +184,7 @@
         .obs-title svg { width: 13px; height: 13px; }
         .obs-text { font-size: 0.875rem; color: var(--text-1); line-height: 1.5; }
 
-        /* ── Progress ── */
+        
         .progress-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -214,12 +195,7 @@
             animation: slideUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .progress-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
+        .progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 
         .progress-title {
             font-size: 0.875rem;
@@ -229,12 +205,7 @@
             letter-spacing: 0.05em;
         }
 
-        .progress-count {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--navy);
-            font-family: 'IBM Plex Mono', monospace;
-        }
+        .progress-count { font-size: 1.125rem; font-weight: 700; color: var(--navy); font-family: 'IBM Plex Mono', monospace; }
 
         .progress-bar-bg {
             background: var(--bg);
@@ -252,11 +223,9 @@
             width: 0%;
         }
 
-        .progress-bar-fill.complete {
-            background: linear-gradient(90deg, var(--success) 0%, #22c55e 100%);
-        }
+        .progress-bar-fill.complete { background: linear-gradient(90deg, var(--success) 0%, #22c55e 100%); }
 
-        /* ── Complete Banner ── */
+        
         .complete-banner {
             display: none;
             background: var(--success-bg);
@@ -279,10 +248,8 @@
         .complete-banner svg { width: 20px; height: 20px; color: var(--success); flex-shrink: 0; }
         .complete-banner p { font-size: 0.875rem; font-weight: 600; color: var(--success); }
 
-        /* ── Instruments List ── */
-        .instruments-section {
-            animation: slideUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
+        
+        .instruments-section { animation: slideUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
         .section-title {
             font-size: 0.78rem;
@@ -314,9 +281,7 @@
             box-shadow: 0 4px 16px rgba(26, 107, 69, 0.12);
         }
 
-        .instrument-card.checking {
-            animation: cardCheck 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .instrument-card.checking { animation: cardCheck 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         @keyframes cardCheck {
             0%   { transform: scale(1); }
@@ -324,14 +289,8 @@
             100% { transform: scale(1); }
         }
 
-        .instr-main {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-        }
+        .instr-main { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
 
-        /* Checkbox circle */
         .check-circle {
             width: 34px;
             height: 34px;
@@ -354,15 +313,8 @@
             transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .instrument-card.checked .check-circle {
-            background: var(--success);
-            border-color: var(--success);
-        }
-
-        .instrument-card.checked .check-circle svg {
-            opacity: 1;
-            transform: scale(1);
-        }
+        .instrument-card.checked .check-circle { background: var(--success); border-color: var(--success); }
+        .instrument-card.checked .check-circle svg { opacity: 1; transform: scale(1); }
 
         .instr-info { flex: 1; min-width: 0; }
 
@@ -376,11 +328,7 @@
             text-overflow: ellipsis;
         }
 
-        .instr-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
+        .instr-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 
         .instr-tag {
             display: inline-flex;
@@ -393,29 +341,17 @@
         }
 
         .instr-tag svg { width: 11px; height: 11px; }
-
         .tag-qty     { background: #EBF4FF; color: #1A4B8E; }
         .tag-avail   { background: var(--success-bg); color: var(--success); }
         .tag-unavail { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
 
-        .instr-chevron {
-            color: var(--text-3);
-            transition: transform 0.3s;
-            flex-shrink: 0;
-        }
-
+        .instr-chevron { color: var(--text-3); transition: transform 0.3s; flex-shrink: 0; }
         .instr-chevron svg { width: 18px; height: 18px; display: block; }
         .instrument-card.expanded .instr-chevron { transform: rotate(180deg); }
 
-        /* ── Comment row ── */
-        .instr-comment {
-            font-size: 0.8rem;
-            color: var(--text-3);
-            margin-top: 4px;
-            font-style: italic;
-        }
+        .instr-comment { font-size: 0.8rem; color: var(--text-3); margin-top: 4px; font-style: italic; }
 
-        /* ── Pieces Section ── */
+        
         .pieces-section {
             border-top: 1px solid var(--border);
             background: var(--surface-2);
@@ -425,10 +361,7 @@
         }
 
         .instrument-card.expanded .pieces-section { max-height: 600px; }
-
-        .pieces-section-inner {
-            padding: 12px 16px 14px;
-        }
+        .pieces-section-inner { padding: 12px 16px 14px; }
 
         .pieces-label {
             font-size: 0.7rem;
@@ -477,25 +410,19 @@
         }
 
         .piece-state-badge svg { width: 11px; height: 11px; }
-
         .state-fiable      { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-bd); }
         .state-non-fiable  { background: var(--danger-bg);  color: var(--danger);  border: 1px solid var(--danger-bd); }
         .state-a-verifier  { background: var(--warn-bg);    color: var(--warn);    border: 1px solid var(--warn-bd); }
 
         .piece-note { font-size: 0.8rem; color: var(--text-2); flex: 1; font-style: italic; }
 
-        /* ── Empty State ── */
-        .empty-state {
-            display: none;
-            text-align: center;
-            padding: 60px 24px;
-        }
-
+        
+        .empty-state { display: none; text-align: center; padding: 60px 24px; }
         .empty-state svg { width: 64px; height: 64px; color: var(--border); margin: 0 auto 16px; display: block; }
         .empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
         .empty-state p { font-size: 0.875rem; color: var(--text-3); }
 
-        /* ── Action Buttons ── */
+        
         .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -522,27 +449,15 @@
         }
 
         .action-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
-
         .action-btn:active { transform: scale(0.96); }
 
-        .btn-print {
-            background: var(--navy);
-            color: white;
-            box-shadow: 0 4px 14px rgba(27,58,92,0.25);
-        }
-
+        .btn-print { background: var(--navy); color: white; box-shadow: 0 4px 14px rgba(27,58,92,0.25); }
         .btn-print:hover { background: var(--navy-light, #254E7A); }
 
-        .btn-reset {
-            background: var(--surface);
-            color: var(--text-1);
-            border: 1.5px solid var(--border);
-            box-shadow: var(--shadow-sm);
-        }
-
+        .btn-reset { background: var(--surface); color: var(--text-1); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); }
         .btn-reset:hover { background: var(--surface-2); border-color: var(--border-2, #BBC7D9); }
 
-        /* ── Print ── */
+        
         @media print {
             header, .action-row, .pieces-section { display: none !important; }
             body { background: white; }
@@ -550,7 +465,7 @@
             .content { padding: 0; }
         }
 
-        /* ── Responsive ── */
+        
         @media (min-width: 480px) {
             .content { padding: 24px 20px; }
             .kit-card { padding: 24px; }
@@ -564,7 +479,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
     <div class="header-inner">
         <div class="header-logo">
@@ -577,10 +491,9 @@
     </div>
 </header>
 
-<!-- CONTENT -->
 <div class="content">
 
-    <!-- KIT INFO -->
+    
     <div class="kit-card" id="kitCard">
         <div class="kit-top">
             <div>
@@ -610,7 +523,7 @@
         </div>
     </div>
 
-    <!-- PROGRESS -->
+    
     <div class="progress-card">
         <div class="progress-header">
             <span class="progress-title">Progression</span>
@@ -625,20 +538,20 @@
         </div>
     </div>
 
-    <!-- INSTRUMENTS -->
+    
     <div class="instruments-section">
         <div class="section-title">Instruments à vérifier</div>
         <div id="instrumentsList"></div>
     </div>
 
-    <!-- EMPTY STATE -->
+    
     <div class="empty-state" id="emptyState">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
         <h3>Données invalides</h3>
         <p>Le QR code scanné ne contient pas de données valides.</p>
     </div>
 
-    <!-- ACTIONS -->
+    
     <div class="action-row">
         <button class="action-btn btn-print" onclick="window.print()">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
@@ -653,7 +566,6 @@
 </div>
 
 <script>
-    // ── Parse URL data ──
     function getDataFromURL() {
         const params = new URLSearchParams(window.location.search);
         const d = params.get('data');
@@ -662,11 +574,9 @@
         catch(e) { return null; }
     }
 
-    // ── State ──
     let checkedSet = new Set();
     let totalCount = 0;
 
-    // ── Init ──
     function init() {
         const data = getDataFromURL();
 
@@ -678,7 +588,6 @@
             return;
         }
 
-        // Kit info
         document.getElementById('kitName').textContent = data.kitName || 'Boîte Médicale';
         document.getElementById('serviceTag').innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
@@ -698,7 +607,6 @@
         updateProgress();
     }
 
-    // ── Render instruments ──
     function renderInstruments(instruments) {
         const list = document.getElementById('instrumentsList');
         list.innerHTML = '';
@@ -707,7 +615,6 @@
             const card = document.createElement('div');
             card.className = 'instrument-card';
             card.dataset.idx = idx;
-            // Stagger animation
             card.style.animation = `slideUp 0.45s ${0.04 + idx * 0.06}s cubic-bezier(0.16, 1, 0.3, 1) both`;
 
             const hasPieces = instr.pieces && instr.pieces.length > 1;
@@ -719,10 +626,8 @@
                 'a verifier': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
             };
 
-            // Overall status for single pieces
             const overallState = instr.pieces?.[0]?.state || 'fiable';
 
-            // Pieces HTML
             let piecesHTML = '';
             if (instr.pieces && instr.pieces.length > 0) {
                 piecesHTML = `<div class="pieces-section">
@@ -769,17 +674,14 @@
             </div>
             ${piecesHTML}`;
 
-            // ── Touch/Click: check OR expand ──
             const mainRow = card.querySelector('.instr-main');
             const chevron = card.querySelector('.instr-chevron');
 
             if (hasPieces) {
-                // Chevron toggles expanded
                 chevron.addEventListener('click', e => {
                     e.stopPropagation();
                     card.classList.toggle('expanded');
                 });
-                // Tapping main row (not chevron) toggles checked
                 mainRow.addEventListener('click', e => {
                     if (e.target.closest('.instr-chevron')) return;
                     toggleCheck(card, idx);
@@ -815,7 +717,6 @@
         document.getElementById('completeBanner').classList.toggle('show', pct === 100);
     }
 
-    // ── Reset ──
     document.getElementById('resetBtn').addEventListener('click', () => {
         if (!confirm('Réinitialiser la liste de vérification?')) return;
         checkedSet.clear();
@@ -827,7 +728,6 @@
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ── Go ──
     init();
 </script>
 </body>

@@ -49,7 +49,7 @@
             min-height: 100vh;
         }
 
-        /* ── Header ── */
+        
         header {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
@@ -64,11 +64,7 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .header-logo img {
-            height: 160px;
-            object-fit: contain;
-            display: block;
-        }
+        .header-logo img { height: 160px; object-fit: contain; display: block; }
 
         .header-title {
             font-size: 1.0625rem;
@@ -78,11 +74,7 @@
             text-transform: uppercase;
         }
 
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .header-nav { display: flex; align-items: center; gap: 8px; }
 
         .nav-btn {
             display: flex;
@@ -101,15 +93,10 @@
             transition: all var(--transition);
         }
 
-        .nav-btn:hover {
-            background: var(--surface-2);
-            border-color: var(--border-2);
-            color: var(--text-1);
-        }
-
+        .nav-btn:hover { background: var(--surface-2); border-color: var(--border-2); color: var(--text-1); }
         .nav-btn svg { width: 15px; height: 15px; }
 
-        /* ── Main Layout ── */
+        
         main {
             max-width: 1280px;
             margin: 0 auto;
@@ -122,7 +109,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── Cards / Sections ── */
+        
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -150,17 +137,10 @@
         }
 
         .card-header h3 svg { width: 16px; height: 16px; color: var(--navy); }
-
         .card-body { padding: 20px; }
 
-        /* ── Top Controls ── */
-        .controls-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
+        
+        .controls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .form-group { position: relative; }
 
         .form-label {
@@ -197,23 +177,11 @@
         }
 
         .form-input { padding: 9px 12px; }
+        .form-select:focus, .form-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
 
-        .form-select:focus, .form-input:focus {
-            border-color: var(--navy);
-            box-shadow: 0 0 0 3px rgba(27,58,92,0.09);
-        }
-
-        /* ── Search Row ── */
-        .search-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .search-wrap {
-            flex: 1;
-            position: relative;
-        }
+        
+        .search-row { display: flex; gap: 8px; margin-bottom: 20px; }
+        .search-wrap { flex: 1; position: relative; }
 
         .search-wrap svg {
             position: absolute;
@@ -239,12 +207,9 @@
             transition: border-color var(--transition), box-shadow var(--transition);
         }
 
-        .search-input:focus {
-            border-color: var(--navy);
-            box-shadow: 0 0 0 3px rgba(27,58,92,0.09);
-        }
+        .search-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
 
-        /* ── Buttons ── */
+        
         .btn {
             display: inline-flex;
             align-items: center;
@@ -263,37 +228,18 @@
         }
 
         .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-
         .btn:active { transform: scale(0.97); }
 
-        .btn-primary {
-            background: var(--navy);
-            color: #fff;
-            border-color: var(--navy);
-        }
+        .btn-primary { background: var(--navy); color: #fff; border-color: var(--navy); }
         .btn-primary:hover { background: var(--navy-light); border-color: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
 
-        .btn-outline {
-            background: transparent;
-            color: var(--navy);
-            border-color: var(--navy);
-        }
+        .btn-outline { background: transparent; color: var(--navy); border-color: var(--navy); }
         .btn-outline:hover { background: rgba(27,58,92,0.05); transform: translateY(-1px); }
 
-        .btn-danger {
-            background: transparent;
-            color: var(--danger);
-            border-color: var(--danger-bd);
-        }
+        .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger-bd); }
         .btn-danger:hover { background: var(--danger-bg); transform: translateY(-1px); }
 
-        .btn-icon {
-            padding: 8px;
-            background: var(--surface-2);
-            border: 1.5px solid var(--border);
-            color: var(--text-2);
-            border-radius: var(--radius);
-        }
+        .btn-icon { padding: 8px; background: var(--surface-2); border: 1.5px solid var(--border); color: var(--text-2); border-radius: var(--radius); }
         .btn-icon:hover { background: var(--border); color: var(--text-1); }
         .btn-icon svg { width: 15px; height: 15px; display: block; }
 
@@ -311,30 +257,13 @@
             transition: all var(--transition);
             box-shadow: var(--shadow-sm);
         }
-        .btn-add-instrument:hover {
-            background: var(--navy-light);
-            box-shadow: 0 4px 14px rgba(27,58,92,0.28);
-            transform: translateY(-1px);
-        }
+        .btn-add-instrument:hover { background: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
         .btn-add-instrument svg { width: 18px; height: 18px; }
 
-        /* ── Instruments Table ── */
-        .table-wrap {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .instruments-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .instruments-table thead {
-            background: var(--surface-2);
-            border-bottom: 1px solid var(--border);
-        }
+        
+        .table-wrap { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+        .instruments-table { width: 100%; border-collapse: collapse; }
+        .instruments-table thead { background: var(--surface-2); border-bottom: 1px solid var(--border); }
 
         .instruments-table th {
             padding: 10px 14px;
@@ -355,10 +284,7 @@
             transition: background var(--transition);
         }
 
-        .instruments-table tbody tr.instrument-main:hover {
-            background: var(--surface-2);
-        }
-
+        .instruments-table tbody tr.instrument-main:hover { background: var(--surface-2); }
         .instruments-table tbody tr.instrument-main:last-child { border-bottom: none; }
 
         @keyframes rowFadeIn {
@@ -366,19 +292,11 @@
             to   { opacity: 1; transform: translateX(0); }
         }
 
-        .instruments-table td {
-            padding: 10px 14px;
-            vertical-align: middle;
-        }
-
+        .instruments-table td { padding: 10px 14px; vertical-align: middle; }
         .instruments-table td.center { text-align: center; }
 
-        /* ── Piece Sub-rows ── */
-        tr.pieces-container {
-            background: #F9FBFD;
-            border-bottom: 2px solid var(--border);
-        }
-
+        
+        tr.pieces-container { background: #F9FBFD; border-bottom: 2px solid var(--border); }
         tr.pieces-container td { padding: 0; }
 
         .pieces-inner {
@@ -401,28 +319,11 @@
             align-items: center;
         }
 
-        .piece-header::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
+        .piece-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        .piece-row {
-            display: grid;
-            grid-template-columns: 80px 160px 1fr;
-            gap: 8px;
-            align-items: center;
-        }
+        .piece-row { display: grid; grid-template-columns: 80px 160px 1fr; gap: 8px; align-items: center; }
 
-        .piece-label {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-2);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .piece-label { font-size: 0.8rem; font-weight: 500; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
 
         .piece-num {
             width: 22px;
@@ -438,7 +339,7 @@
             flex-shrink: 0;
         }
 
-        /* ── Inline Inputs ── */
+        
         .table-input {
             width: 100%;
             padding: 6px 10px;
@@ -452,16 +353,8 @@
             transition: all var(--transition);
         }
 
-        .table-input:focus, .table-input:hover {
-            background: var(--surface);
-            border-color: var(--border);
-        }
-
-        .table-input:focus {
-            border-color: var(--navy);
-            box-shadow: 0 0 0 2px rgba(27,58,92,0.09);
-            background: var(--surface);
-        }
+        .table-input:focus, .table-input:hover { background: var(--surface); border-color: var(--border); }
+        .table-input:focus { border-color: var(--navy); box-shadow: 0 0 0 2px rgba(27,58,92,0.09); background: var(--surface); }
 
         .table-select {
             padding: 5px 28px 5px 8px;
@@ -483,18 +376,12 @@
 
         .table-select:focus { border-color: var(--navy); outline: none; }
 
-        /* State badge colors */
         .table-select.state-fiable { border-color: var(--success-bd); background-color: var(--success-bg); color: var(--success); }
         .table-select.state-non_fiable { border-color: var(--danger-bd); background-color: var(--danger-bg); color: var(--danger); }
         .table-select.state-a_verifier { border-color: var(--warn-bd); background-color: var(--warn-bg); color: var(--warn); }
 
-        /* ── Quantity Control ── */
-        .qty-control {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
+        
+        .qty-control { display: flex; align-items: center; justify-content: center; gap: 6px; }
 
         .qty-btn {
             width: 24px;
@@ -523,19 +410,9 @@
             font-family: 'IBM Plex Mono', monospace;
         }
 
-        /* ── Toggle Switch ── */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 36px;
-            height: 20px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        
+        .toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
 
         .toggle-slider {
             position: absolute;
@@ -562,7 +439,7 @@
         .toggle-switch input:checked + .toggle-slider { background: var(--success); }
         .toggle-switch input:checked + .toggle-slider::after { transform: translateX(16px); }
 
-        /* ── Delete row button ── */
+        
         .delete-row-btn {
             background: none;
             border: none;
@@ -576,32 +453,17 @@
         .delete-row-btn:hover { color: var(--danger); background: var(--danger-bg); }
         .delete-row-btn svg { width: 15px; height: 15px; }
 
-        /* ── Empty table state ── */
-        .table-empty {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-3);
-        }
-
+        
+        .table-empty { text-align: center; padding: 40px 20px; color: var(--text-3); }
         .table-empty svg { width: 36px; height: 36px; margin: 0 auto 10px; display: block; opacity: 0.5; }
         .table-empty p { font-size: 0.875rem; }
 
-        /* ── Bottom row (add + actions) ── */
-        .table-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .instrument-count {
-            font-size: 0.8125rem;
-            color: var(--text-3);
-        }
-
+        
+        .table-footer { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .instrument-count { font-size: 0.8125rem; color: var(--text-3); }
         .instrument-count strong { color: var(--text-1); font-weight: 600; }
 
-        /* ── Observations ── */
+        
         .form-textarea {
             width: 100%;
             padding: 9px 12px;
@@ -618,25 +480,15 @@
         }
         .form-textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
 
-        /* ── Info Grid ── */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .info-item .info-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
         .info-item .info-value { font-size: 0.875rem; color: var(--text-1); font-family: 'IBM Plex Mono', monospace; }
 
-        /* ── Action Buttons Row ── */
-        .action-row {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        
+        .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-        /* ── Right Sidebar ── */
+        
         .sidebar { display: flex; flex-direction: column; gap: 16px; }
 
         .qr-container {
@@ -649,17 +501,12 @@
             min-height: 200px;
         }
 
-        .qr-placeholder {
-            text-align: center;
-            color: var(--text-3);
-        }
-
+        .qr-placeholder { text-align: center; color: var(--text-3); }
         .qr-placeholder svg { width: 60px; height: 60px; margin: 0 auto 10px; display: block; opacity: 0.35; }
         .qr-placeholder p { font-size: 0.8125rem; }
-
         #qrcode canvas { border-radius: 4px; display: block; }
 
-        /* ── Sidebar Info ── */
+        
         .sidebar-info-row {
             display: flex;
             justify-content: space-between;
@@ -673,7 +520,7 @@
         .sidebar-info-row .si-label { color: var(--text-3); font-weight: 500; }
         .sidebar-info-row .si-value { color: var(--text-1); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; text-align: right; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
 
-        /* ── Notification ── */
+        
         .notification {
             position: fixed;
             top: 20px;
@@ -708,14 +555,13 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
     <div class="header-logo">
         <img src="Assets/logo_no_bg.png" alt="SteriFlow">
     </div>
     <div class="header-title">Créer / Modifier une Boîte</div>
     <nav class="header-nav">
-        <!-- ── AUTH: clear session on logout ── -->
+        
         <a href="#" onclick="sessionStorage.removeItem('sf_auth'); window.location.href='login.html'; return false;" class="nav-btn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             Déconnexion
@@ -723,12 +569,11 @@
     </nav>
 </header>
 
-<!-- MAIN -->
 <main>
-    <!-- LEFT: FORM -->
+    
     <div class="left-col">
 
-        <!-- BOX INFO -->
+        
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
                 <h3>
@@ -776,7 +621,7 @@
             </div>
         </div>
 
-        <!-- INSTRUMENTS TABLE -->
+        
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
                 <h3>
@@ -808,7 +653,7 @@
             </div>
         </div>
 
-        <!-- OBSERVATIONS & META -->
+        
         <div class="card" style="margin-bottom:20px;">
             <div class="card-header">
                 <h3>
@@ -834,7 +679,7 @@
             </div>
         </div>
 
-        <!-- ACTION BUTTONS -->
+        
         <div class="action-row">
             <button id="generateQRBtn" class="btn btn-primary">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
@@ -851,10 +696,10 @@
         </div>
     </div>
 
-    <!-- RIGHT: SIDEBAR -->
+    
     <div class="sidebar">
 
-        <!-- QR CODE -->
+        
         <div class="card">
             <div class="card-header">
                 <h3>
@@ -884,7 +729,7 @@
             </div>
         </div>
 
-        <!-- SIDEBAR INFO -->
+        
         <div class="card">
             <div class="card-header">
                 <h3>
@@ -919,18 +764,18 @@
 </style>
 
 <script>
-    // ── AUTH: guard — redirect to login if not authenticated ──
+    
     if (!sessionStorage.getItem('sf_auth')) {
         window.location.replace('login.html');
     }
 
-    // ── State ──
+    
     let instruments = [];
     let kitUniqueId = '';
     let kitCreationDate = '';
     let currentViewerURL = '';
 
-    // ── Helpers ──
+    
     function generateId() {
         const now = new Date();
         const d = now.getFullYear() +
@@ -951,14 +796,14 @@
         document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
     }
 
-    // ── State class for select ──
+    
     function stateClass(state) {
         return state === 'fiable' ? 'state-fiable' :
                state === 'non fiable' ? 'state-non_fiable' :
                state === 'a verifier' ? 'state-a_verifier' : '';
     }
 
-    // ── Add instrument ──
+    
     document.getElementById('addInstrumentBtn').addEventListener('click', () => addInstrumentRow());
 
     function addInstrumentRow(data = {}) {
@@ -975,7 +820,7 @@
         renderTable();
     }
 
-    // ── Render ──
+    
     function renderTable() {
         const tbody = document.getElementById('instrumentsTable');
         tbody.innerHTML = '';
@@ -995,7 +840,6 @@
         }
 
         instruments.forEach((instr, idx) => {
-            // ── Main row ──
             const tr = document.createElement('tr');
             tr.className = 'instrument-main';
             tr.innerHTML = `
@@ -1035,7 +879,6 @@
             `;
             tbody.appendChild(tr);
 
-            // ── Pieces sub-row ──
             const trPieces = document.createElement('tr');
             trPieces.className = 'pieces-container';
             let piecesHTML = `<td colspan="5"><div class="pieces-inner">
@@ -1095,7 +938,6 @@
                'state-a_verifier';
     }
 
-    // ── Generate QR ──
     document.getElementById('generateQRBtn').addEventListener('click', () => {
         if (instruments.length === 0) {
             showNotification('Veuillez ajouter au moins un instrument.', 'error'); return;
@@ -1123,7 +965,6 @@
         showNotification(`QR Code généré — ID: ${kitUniqueId}`, 'success');
     });
 
-    // ── Download ──
     document.getElementById('downloadQRBtn').addEventListener('click', () => {
         const canvas = document.querySelector('#qrcode canvas');
         if (canvas) {
@@ -1140,7 +981,6 @@
         else showNotification('Veuillez d\'abord générer le QR code.', 'error');
     });
 
-    // ── Save ──
     document.getElementById('saveBtn').addEventListener('click', () => {
         if (instruments.length === 0) { showNotification('Aucun instrument à sauvegarder.', 'error'); return; }
         setKitMeta();
@@ -1156,7 +996,6 @@
         showNotification(`Boîte sauvegardée — ID: ${kitUniqueId}`, 'success');
     });
 
-    // ── Delete ──
     document.getElementById('deleteBtn').addEventListener('click', () => {
         if (!confirm('Êtes-vous sûr de vouloir réinitialiser cette boîte?')) return;
         instruments = []; kitUniqueId = ''; kitCreationDate = ''; currentViewerURL = '';
@@ -1169,7 +1008,6 @@
         showNotification('Boîte réinitialisée.', 'info');
     });
 
-    // ── Notification ──
     function showNotification(msg, type = 'info') {
         const icons = {
             success: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
@@ -1186,7 +1024,6 @@
         }, 3500);
     }
 
-    // Init
     renderTable();
 </script>
 </body>

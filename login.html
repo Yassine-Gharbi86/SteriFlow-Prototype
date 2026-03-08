@@ -36,14 +36,14 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── Layout ── */
+        
         .page {
             display: grid;
             grid-template-columns: 1fr 1fr;
             min-height: 100vh;
         }
 
-        /* ── Left Panel ── */
+        
         .panel-left {
             background: var(--navy-deep);
             position: relative;
@@ -56,7 +56,7 @@
             animation: slideInLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        /* Subtle grid pattern */
+        
         .panel-left::before {
             content: '';
             position: absolute;
@@ -68,7 +68,7 @@
             pointer-events: none;
         }
 
-        /* Large cross watermark */
+        
         .panel-left::after {
             content: '+';
             position: absolute;
@@ -103,11 +103,7 @@
             animation: fadeSlideUp 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .brand-logo-wrap img {
-            width: 180px;
-            height: 180px;
-            object-fit: contain;
-        }
+        .brand-logo-wrap img { width: 180px; height: 180px; object-fit: contain; }
 
         .brand-name {
             font-size: 2rem;
@@ -118,9 +114,7 @@
             animation: fadeSlideUp 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .brand-name span {
-            color: #5DB8D0;
-        }
+        .brand-name span { color: #5DB8D0; }
 
         .brand-tagline {
             font-size: 0.875rem;
@@ -172,7 +166,7 @@
 
         .feature-icon svg { width: 14px; height: 14px; color: #5DB8D0; }
 
-        /* ── Right Panel ── */
+        
         .panel-right {
             display: flex;
             flex-direction: column;
@@ -182,10 +176,7 @@
             animation: slideInRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-        }
+        .login-card { width: 100%; max-width: 400px; }
 
         .login-header {
             margin-bottom: 36px;
@@ -200,13 +191,9 @@
             margin-bottom: 6px;
         }
 
-        .login-header p {
-            font-size: 0.9rem;
-            color: var(--text-3);
-            font-weight: 400;
-        }
+        .login-header p { font-size: 0.9rem; color: var(--text-3); font-weight: 400; }
 
-        /* ── Form ── */
+        
         .form-group {
             margin-bottom: 20px;
             animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -226,9 +213,7 @@
             margin-bottom: 8px;
         }
 
-        .input-wrap {
-            position: relative;
-        }
+        .input-wrap { position: relative; }
 
         .input-icon {
             position: absolute;
@@ -264,11 +249,8 @@
         }
 
         .form-input:focus + .input-icon,
-        .input-wrap:focus-within .input-icon {
-            color: var(--navy);
-        }
+        .input-wrap:focus-within .input-icon { color: var(--navy); }
 
-        /* password toggle */
         .pwd-toggle {
             position: absolute;
             right: 14px;
@@ -285,7 +267,7 @@
         .pwd-toggle:hover { color: var(--text-2); }
         .pwd-toggle svg { width: 18px; height: 18px; }
 
-        /* ── Options row ── */
+        
         .form-options {
             display: flex;
             align-items: center;
@@ -294,24 +276,9 @@
             animation: fadeSlideUp 0.7s 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .checkbox-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-wrap input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--navy);
-            cursor: pointer;
-        }
-
-        .checkbox-label {
-            font-size: 0.875rem;
-            color: var(--text-2);
-        }
+        .checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .checkbox-wrap input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--navy); cursor: pointer; }
+        .checkbox-label { font-size: 0.875rem; color: var(--text-2); }
 
         .forgot-link {
             font-size: 0.875rem;
@@ -322,7 +289,7 @@
         }
         .forgot-link:hover { color: var(--teal); }
 
-        /* ── Submit Button ── */
+        
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -347,11 +314,7 @@
             box-shadow: 0 6px 20px rgba(27,58,92,0.30);
         }
 
-        .btn-login:active {
-            transform: translateY(0);
-            box-shadow: none;
-        }
-
+        .btn-login:active { transform: translateY(0); box-shadow: none; }
         .btn-login .btn-text { transition: opacity 0.2s; }
         .btn-login.loading .btn-text { opacity: 0; }
 
@@ -370,7 +333,7 @@
 
         .btn-login.loading .btn-spinner { opacity: 1; }
 
-        /* ── Error / Success ── */
+        
         .alert {
             display: none;
             align-items: center;
@@ -387,7 +350,7 @@
         .alert-error { background: #FDF2F2; border: 1px solid #EBA8A8; color: var(--danger); }
         .alert svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-        /* ── Footer ── */
+        
         .login-footer {
             margin-top: 28px;
             text-align: center;
@@ -396,7 +359,7 @@
             animation: fadeSlideUp 0.7s 0.54s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        /* ── Animations ── */
+        
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-30px); }
             to   { opacity: 1; transform: translateX(0); }
@@ -419,7 +382,7 @@
             40%, 60% { transform: translateX(4px); }
         }
 
-        /* ── Responsive ── */
+        
         @media (max-width: 768px) {
             .page { grid-template-columns: 1fr; }
             .panel-left { display: none; }
@@ -431,7 +394,7 @@
 <body>
 <div class="page">
 
-    <!-- LEFT PANEL -->
+    
     <div class="panel-left">
         <div class="panel-left-content">
             <div class="brand-logo-wrap">
@@ -469,7 +432,7 @@
         </div>
     </div>
 
-    <!-- RIGHT PANEL -->
+    
     <div class="panel-right">
         <div class="login-card">
             <div class="login-header">
@@ -531,7 +494,7 @@
     .hidden { display: none !important; }
 </style>
 <script>
-    // Password toggle
+    
     const pwdInput = document.getElementById('password');
     const pwdToggle = document.getElementById('pwdToggle');
     const eyeOpen = document.getElementById('eyeOpen');
@@ -544,7 +507,7 @@
         eyeClosed.classList.toggle('hidden', !isHidden);
     });
 
-    // Login handler (front-end demo only)
+    
     const loginBtn = document.getElementById('loginBtn');
     const alertError = document.getElementById('alertError');
 
@@ -557,16 +520,16 @@
             return;
         }
 
-        // Loading state
+        
         loginBtn.classList.add('loading');
         loginBtn.disabled = true;
         alertError.classList.remove('show');
 
-        // No backend yet — accept any non-empty credentials
+        
         setTimeout(() => {
             loginBtn.classList.remove('loading');
             loginBtn.disabled = false;
-            // ── AUTH: set session flag then redirect ──
+            
             sessionStorage.setItem('sf_auth', '1');
             window.location.href = 'index.html';
         }, 1000);
@@ -574,14 +537,14 @@
 
     loginBtn.addEventListener('click', doLogin);
 
-    // Enter key support
+    
     [document.getElementById('username'), document.getElementById('password')]
         .forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); }));
 
     function showError(msg) {
         document.getElementById('alertErrorMsg').textContent = msg;
         alertError.classList.add('show');
-        // Re-trigger animation
+        
         alertError.style.animation = 'none';
         requestAnimationFrame(() => { alertError.style.animation = ''; });
     }

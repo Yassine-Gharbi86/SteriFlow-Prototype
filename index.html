@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- Supabase JS client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,7 +51,6 @@
             min-height: 100vh;
         }
 
-        
         header {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
@@ -96,7 +97,6 @@
         .nav-btn:hover { background: var(--surface-2); border-color: var(--border-2); color: var(--text-1); }
         .nav-btn svg { width: 15px; height: 15px; }
 
-        
         main {
             max-width: 1280px;
             margin: 0 auto;
@@ -109,7 +109,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -139,7 +138,6 @@
         .card-header h3 svg { width: 16px; height: 16px; color: var(--navy); }
         .card-body { padding: 20px; }
 
-        
         .controls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .form-group { position: relative; }
 
@@ -179,7 +177,6 @@
         .form-input { padding: 9px 12px; }
         .form-select:focus, .form-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
 
-        
         .search-row { display: flex; gap: 8px; margin-bottom: 20px; }
         .search-wrap { flex: 1; position: relative; }
 
@@ -209,7 +206,6 @@
 
         .search-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
 
-        
         .btn {
             display: inline-flex;
             align-items: center;
@@ -229,15 +225,16 @@
 
         .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
         .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
         .btn-primary { background: var(--navy); color: #fff; border-color: var(--navy); }
-        .btn-primary:hover { background: var(--navy-light); border-color: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
+        .btn-primary:hover:not(:disabled) { background: var(--navy-light); border-color: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
 
         .btn-outline { background: transparent; color: var(--navy); border-color: var(--navy); }
-        .btn-outline:hover { background: rgba(27,58,92,0.05); transform: translateY(-1px); }
+        .btn-outline:hover:not(:disabled) { background: rgba(27,58,92,0.05); transform: translateY(-1px); }
 
         .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger-bd); }
-        .btn-danger:hover { background: var(--danger-bg); transform: translateY(-1px); }
+        .btn-danger:hover:not(:disabled) { background: var(--danger-bg); transform: translateY(-1px); }
 
         .btn-icon { padding: 8px; background: var(--surface-2); border: 1.5px solid var(--border); color: var(--text-2); border-radius: var(--radius); }
         .btn-icon:hover { background: var(--border); color: var(--text-1); }
@@ -260,7 +257,6 @@
         .btn-add-instrument:hover { background: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
         .btn-add-instrument svg { width: 18px; height: 18px; }
 
-        
         .table-wrap { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
         .instruments-table { width: 100%; border-collapse: collapse; }
         .instruments-table thead { background: var(--surface-2); border-bottom: 1px solid var(--border); }
@@ -295,7 +291,6 @@
         .instruments-table td { padding: 10px 14px; vertical-align: middle; }
         .instruments-table td.center { text-align: center; }
 
-        
         tr.pieces-container { background: #F9FBFD; border-bottom: 2px solid var(--border); }
         tr.pieces-container td { padding: 0; }
 
@@ -339,7 +334,6 @@
             flex-shrink: 0;
         }
 
-        
         .table-input {
             width: 100%;
             padding: 6px 10px;
@@ -380,7 +374,6 @@
         .table-select.state-non_fiable { border-color: var(--danger-bd); background-color: var(--danger-bg); color: var(--danger); }
         .table-select.state-a_verifier { border-color: var(--warn-bd); background-color: var(--warn-bg); color: var(--warn); }
 
-        
         .qty-control { display: flex; align-items: center; justify-content: center; gap: 6px; }
 
         .qty-btn {
@@ -410,7 +403,6 @@
             font-family: 'IBM Plex Mono', monospace;
         }
 
-        
         .toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
 
@@ -439,7 +431,6 @@
         .toggle-switch input:checked + .toggle-slider { background: var(--success); }
         .toggle-switch input:checked + .toggle-slider::after { transform: translateX(16px); }
 
-        
         .delete-row-btn {
             background: none;
             border: none;
@@ -453,17 +444,14 @@
         .delete-row-btn:hover { color: var(--danger); background: var(--danger-bg); }
         .delete-row-btn svg { width: 15px; height: 15px; }
 
-        
         .table-empty { text-align: center; padding: 40px 20px; color: var(--text-3); }
         .table-empty svg { width: 36px; height: 36px; margin: 0 auto 10px; display: block; opacity: 0.5; }
         .table-empty p { font-size: 0.875rem; }
 
-        
         .table-footer { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .instrument-count { font-size: 0.8125rem; color: var(--text-3); }
         .instrument-count strong { color: var(--text-1); font-weight: 600; }
 
-        
         .form-textarea {
             width: 100%;
             padding: 9px 12px;
@@ -480,15 +468,12 @@
         }
         .form-textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
 
-        
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .info-item .info-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
         .info-item .info-value { font-size: 0.875rem; color: var(--text-1); font-family: 'IBM Plex Mono', monospace; }
 
-        
         .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-        
         .sidebar { display: flex; flex-direction: column; gap: 16px; }
 
         .qr-container {
@@ -506,7 +491,6 @@
         .qr-placeholder p { font-size: 0.8125rem; }
         #qrcode canvas { border-radius: 4px; display: block; }
 
-        
         .sidebar-info-row {
             display: flex;
             justify-content: space-between;
@@ -520,7 +504,6 @@
         .sidebar-info-row .si-label { color: var(--text-3); font-weight: 500; }
         .sidebar-info-row .si-value { color: var(--text-1); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; text-align: right; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
 
-        
         .notification {
             position: fixed;
             top: 20px;
@@ -551,6 +534,25 @@
             from { opacity: 1; transform: translateY(0); }
             to   { opacity: 0; transform: translateY(-10px); }
         }
+
+        /* DB status indicator */
+        .db-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-3);
+        }
+        .db-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--border-2);
+            transition: background 0.3s;
+        }
+        .db-status-dot.connected { background: #4ADE80; }
+        .db-status-dot.error     { background: #F87171; }
     </style>
 </head>
 <body>
@@ -561,7 +563,10 @@
     </div>
     <div class="header-title">Créer / Modifier une Boîte</div>
     <nav class="header-nav">
-        
+        <div class="db-status" id="dbStatus" title="État de la base de données">
+            <div class="db-status-dot" id="dbStatusDot"></div>
+            <span id="dbStatusText">Base de données…</span>
+        </div>
         <a href="#" onclick="sessionStorage.removeItem('sf_auth'); window.location.href='login.html'; return false;" class="nav-btn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             Déconnexion
@@ -570,10 +575,8 @@
 </header>
 
 <main>
-    
     <div class="left-col">
 
-        
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
                 <h3>
@@ -616,7 +619,6 @@
             </div>
         </div>
 
-        
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
                 <h3>
@@ -648,7 +650,6 @@
             </div>
         </div>
 
-        
         <div class="card" style="margin-bottom:20px;">
             <div class="card-header">
                 <h3>
@@ -674,7 +675,6 @@
             </div>
         </div>
 
-        
         <div class="action-row">
             <button id="generateQRBtn" class="btn btn-primary">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
@@ -691,10 +691,8 @@
         </div>
     </div>
 
-    
     <div class="sidebar">
 
-        
         <div class="card">
             <div class="card-header">
                 <h3>
@@ -711,7 +709,7 @@
                     </div>
                 </div>
 
-                <div id="qrActions" class="hidden" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                <div id="qrActions" style="display:none;margin-top:12px;flex-direction:column;gap:8px;">
                     <button id="downloadQRBtn" class="btn btn-primary" style="width:100%;justify-content:center;">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                         Télécharger
@@ -724,7 +722,6 @@
             </div>
         </div>
 
-        
         <div class="card">
             <div class="card-header">
                 <h3>
@@ -754,23 +751,56 @@
     </div>
 </main>
 
-<style>
-    .hidden { display: none !important; }
-</style>
+<style>.hidden { display: none !important; }</style>
 
 <script>
-    
+    // ─── Auth guard ────────────────────────────────────────────────────────────
     if (!sessionStorage.getItem('sf_auth')) {
         window.location.replace('login.html');
     }
 
-    
+    // ─── Supabase client ───────────────────────────────────────────────────────
+    const { createClient } = supabase;
+    let db = null;
+    let dbReady = false;
+
+    function initDB() {
+        const dot  = document.getElementById('dbStatusDot');
+        const text = document.getElementById('dbStatusText');
+        try {
+            if (!STERIFLOW_CONFIG.supabaseUrl || STERIFLOW_CONFIG.supabaseUrl === 'YOUR_SUPABASE_URL') {
+                dot.style.background = '#FBBF24';
+                text.textContent = 'DB non configurée';
+                return;
+            }
+            db = createClient(STERIFLOW_CONFIG.supabaseUrl, STERIFLOW_CONFIG.supabaseAnonKey);
+            // Quick connectivity test
+            db.from('kits').select('kit_id', { count: 'exact', head: true }).then(({ error }) => {
+                if (error) {
+                    dot.style.background = '#F87171';
+                    text.textContent = 'Erreur DB';
+                    console.error('Supabase error:', error);
+                } else {
+                    dot.classList.add('connected');
+                    text.textContent = 'Base connectée';
+                    dbReady = true;
+                }
+            });
+        } catch (e) {
+            dot.style.background = '#F87171';
+            text.textContent = 'Erreur DB';
+        }
+    }
+
+    initDB();
+
+    // ─── State ─────────────────────────────────────────────────────────────────
     let instruments = [];
     let kitUniqueId = '';
     let kitCreationDate = '';
     let currentViewerURL = '';
 
-    
+    // ─── Helpers ───────────────────────────────────────────────────────────────
     function generateId() {
         const now = new Date();
         const d = now.getFullYear() +
@@ -791,31 +821,52 @@
         document.getElementById('uniqueIdSidebar').textContent = kitUniqueId;
     }
 
-    
     function stateClass(state) {
         return state === 'fiable' ? 'state-fiable' :
                state === 'non fiable' ? 'state-non_fiable' :
-               state === 'a verifier' ? 'state-a_verifier' : '';
+               'state-a_verifier';
     }
 
-    
+    function escapeHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── Database operations ──────────────────────────────────────────────────
+    async function saveKitToDB(kitData) {
+        if (!dbReady || !db) throw new Error('Base de données non disponible.');
+
+        const payload = {
+            kit_id:       kitData.kitId,
+            kit_name:     kitData.kitName,
+            service:      kitData.service,
+            instruments:  kitData.instruments,
+            observations: kitData.observations,
+            updated_at:   new Date().toISOString()
+        };
+
+        const { error } = await db.from('kits')
+            .upsert(payload, { onConflict: 'kit_id' });
+
+        if (error) throw error;
+    }
+
+    // ─── Instruments table ────────────────────────────────────────────────────
     document.getElementById('addInstrumentBtn').addEventListener('click', () => addInstrumentRow());
 
     function addInstrumentRow(data = {}) {
         const qty = data.quantity || 1;
         const row = {
-            id: Date.now(),
-            name: data.name || '',
+            id:        Date.now(),
+            name:      data.name || '',
             available: data.available !== undefined ? data.available : true,
-            quantity: qty,
-            pieces: data.pieces || Array.from({ length: qty }, () => ({ state: 'fiable', note: '' })),
-            comment: data.comment || ''
+            quantity:  qty,
+            pieces:    data.pieces || Array.from({ length: qty }, () => ({ state: 'fiable', note: '' })),
+            comment:   data.comment || ''
         };
         instruments.push(row);
         renderTable();
     }
 
-    
     function renderTable() {
         const tbody = document.getElementById('instrumentsTable');
         tbody.innerHTML = '';
@@ -870,8 +921,7 @@
                     <button class="delete-row-btn" onclick="removeInstrument(${idx})" title="Supprimer">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                     </button>
-                </td>
-            `;
+                </td>`;
             tbody.appendChild(tr);
 
             const trPieces = document.createElement('tr');
@@ -886,9 +936,9 @@
                     </div>
                     <select class="table-select ${stateClass(piece.state)}"
                         onchange="updatePiece(${idx}, ${pi}, 'state', this.value); this.className='table-select '+stateClass(this.value)">
-                        <option value="fiable" ${piece.state === 'fiable' ? 'selected' : ''}>✓ Fiable</option>
-                        <option value="non fiable" ${piece.state === 'non fiable' ? 'selected' : ''}>✗ Non fiable</option>
-                        <option value="a verifier" ${piece.state === 'a verifier' ? 'selected' : ''}>⚠ À vérifier</option>
+                        <option value="fiable"      ${piece.state === 'fiable'      ? 'selected' : ''}>✓ Fiable</option>
+                        <option value="non fiable"  ${piece.state === 'non fiable'  ? 'selected' : ''}>✗ Non fiable</option>
+                        <option value="a verifier"  ${piece.state === 'a verifier'  ? 'selected' : ''}>⚠ À vérifier</option>
                     </select>
                     <input type="text" class="table-input" value="${escapeHtml(piece.note)}"
                         placeholder="Note sur cette pièce…"
@@ -900,10 +950,6 @@
             trPieces.innerHTML = piecesHTML;
             tbody.appendChild(trPieces);
         });
-    }
-
-    function escapeHtml(str) {
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function changeQty(idx, delta) {
@@ -927,39 +973,103 @@
         renderTable();
     }
 
-    function stateClass(state) {
-        return state === 'fiable' ? 'state-fiable' :
-               state === 'non fiable' ? 'state-non_fiable' :
-               'state-a_verifier';
-    }
-
-    document.getElementById('generateQRBtn').addEventListener('click', () => {
+    // ─── Generate QR Code ─────────────────────────────────────────────────────
+    document.getElementById('generateQRBtn').addEventListener('click', async () => {
         if (instruments.length === 0) {
-            showNotification('Veuillez ajouter au moins un instrument.', 'error'); return;
+            showNotification('Veuillez ajouter au moins un instrument.', 'error');
+            return;
         }
-        setKitMeta();
+        if (!dbReady) {
+            showNotification('Base de données non connectée. Vérifiez config.js.', 'error');
+            return;
+        }
 
-        const kitName = document.getElementById('kitName').value;
-        const service = document.getElementById('service').value;
-        const observations = document.getElementById('observations').value;
+        const btn = document.getElementById('generateQRBtn');
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation:spin .7s linear infinite"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Sauvegarde…`;
 
-        const data = { kitId: kitUniqueId, kitName, service, instruments, observations, date: kitCreationDate };
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-        const viewerURL = typeof getViewerUrl === 'function' ? getViewerUrl(encoded) : `viewer.html?data=${encoded}`;
-        currentViewerURL = viewerURL;
+        try {
+            setKitMeta();
 
-        const qrcodeDiv = document.getElementById('qrcode');
-        qrcodeDiv.innerHTML = '';
-        document.getElementById('qrPlaceholder').classList.add('hidden');
+            const kitData = {
+                kitId:        kitUniqueId,
+                kitName:      document.getElementById('kitName').value,
+                service:      document.getElementById('service').value,
+                instruments:  instruments,
+                observations: document.getElementById('observations').value,
+                date:         kitCreationDate
+            };
 
-        const canvas = document.createElement('canvas');
-        new QRious({ element: canvas, value: viewerURL, size: 260, level: 'M', background: '#ffffff', foreground: '#1B3A5C' });
-        qrcodeDiv.appendChild(canvas);
+            // Save to database first
+            await saveKitToDB(kitData);
 
-        document.getElementById('qrActions').classList.remove('hidden');
-        showNotification(`QR Code généré — ID: ${kitUniqueId}`, 'success');
+            // Build a SHORT viewer URL — only the kit ID goes in, no data at all
+            const viewerURL = getViewerUrl(kitUniqueId);
+            currentViewerURL = viewerURL;
+
+            // Generate QR code (URL is always short regardless of instrument count)
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            document.getElementById('qrPlaceholder').classList.add('hidden');
+
+            const canvas = document.createElement('canvas');
+            new QRious({
+                element:    canvas,
+                value:      viewerURL,
+                size:       260,
+                level:      'M',
+                background: '#ffffff',
+                foreground: '#1B3A5C'
+            });
+            qrcodeDiv.appendChild(canvas);
+
+            const qrActions = document.getElementById('qrActions');
+            qrActions.style.display = 'flex';
+
+            showNotification(`QR Code généré — ID: ${kitUniqueId}`, 'success');
+        } catch (err) {
+            console.error(err);
+            showNotification(`Erreur: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg> Générer QR Code`;
+        }
     });
 
+    // ─── Save button ──────────────────────────────────────────────────────────
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+        if (instruments.length === 0) {
+            showNotification('Aucun instrument à sauvegarder.', 'error');
+            return;
+        }
+        if (!dbReady) {
+            showNotification('Base de données non connectée. Vérifiez config.js.', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+
+        try {
+            setKitMeta();
+            await saveKitToDB({
+                kitId:        kitUniqueId,
+                kitName:      document.getElementById('kitName').value,
+                service:      document.getElementById('service').value,
+                instruments:  instruments,
+                observations: document.getElementById('observations').value,
+                date:         kitCreationDate
+            });
+            showNotification(`Boîte sauvegardée — ID: ${kitUniqueId}`, 'success');
+        } catch (err) {
+            console.error(err);
+            showNotification(`Erreur de sauvegarde: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    // ─── Download QR ──────────────────────────────────────────────────────────
     document.getElementById('downloadQRBtn').addEventListener('click', () => {
         const canvas = document.querySelector('#qrcode canvas');
         if (canvas) {
@@ -971,38 +1081,27 @@
         }
     });
 
+    // ─── Test link ────────────────────────────────────────────────────────────
     document.getElementById('testLinkBtn').addEventListener('click', () => {
         if (currentViewerURL) window.open(currentViewerURL, '_blank');
         else showNotification('Veuillez d\'abord générer le QR code.', 'error');
     });
 
-    document.getElementById('saveBtn').addEventListener('click', () => {
-        if (instruments.length === 0) { showNotification('Aucun instrument à sauvegarder.', 'error'); return; }
-        setKitMeta();
-        const data = {
-            kitId: kitUniqueId,
-            kitName: document.getElementById('kitName').value,
-            service: document.getElementById('service').value,
-            instruments,
-            observations: document.getElementById('observations').value,
-            date: kitCreationDate
-        };
-        localStorage.setItem(`kit_${kitUniqueId}`, JSON.stringify(data));
-        showNotification(`Boîte sauvegardée — ID: ${kitUniqueId}`, 'success');
-    });
-
+    // ─── Delete / Reset ───────────────────────────────────────────────────────
     document.getElementById('deleteBtn').addEventListener('click', () => {
         if (!confirm('Êtes-vous sûr de vouloir réinitialiser cette boîte?')) return;
         instruments = []; kitUniqueId = ''; kitCreationDate = ''; currentViewerURL = '';
         renderTable();
         document.getElementById('qrcode').innerHTML = '';
         document.getElementById('qrPlaceholder').classList.remove('hidden');
-        document.getElementById('qrActions').classList.add('hidden');
+        document.getElementById('qrActions').style.display = 'none';
         document.getElementById('observations').value = '';
-        ['dateCreated','dateCreatedSidebar','uniqueId','uniqueIdSidebar'].forEach(id => document.getElementById(id).textContent = '—');
+        ['dateCreated','dateCreatedSidebar','uniqueId','uniqueIdSidebar']
+            .forEach(id => document.getElementById(id).textContent = '—');
         showNotification('Boîte réinitialisée.', 'info');
     });
 
+    // ─── Notifications ────────────────────────────────────────────────────────
     function showNotification(msg, type = 'info') {
         const icons = {
             success: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
@@ -1019,6 +1118,12 @@
         }, 3500);
     }
 
+    // ─── Spin keyframe ────────────────────────────────────────────────────────
+    const spinStyle = document.createElement('style');
+    spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(spinStyle);
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
     renderTable();
 </script>
 </body>

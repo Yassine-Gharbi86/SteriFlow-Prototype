@@ -6,6 +6,9 @@
     <title>SteriFlow — Vérification</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Supabase JS client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -49,24 +52,23 @@
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
-        
         header {
             background: #ffffff;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    height: 70px;
-}
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 70px;
+        }
 
         .header-inner {
             max-width: 680px;
-    margin: 0 auto;
-    height: 100%;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+            margin: 0 auto;
+            height: 100%;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .header-logo img { height: 160px; object-fit: contain; }
@@ -99,10 +101,29 @@
             50% { opacity: 0.7; transform: scale(0.85); }
         }
 
-        
         .content { max-width: 680px; margin: 0 auto; padding: 20px 16px; }
 
-        
+        /* ── Loading skeleton ─────────────────────────────────────── */
+        .skeleton-wrap { animation: slideUp 0.5s ease both; }
+
+        .skeleton-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .skeleton-line {
+            background: linear-gradient(90deg, var(--border) 25%, var(--surface-2) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            border-radius: 6px;
+            animation: shimmer 1.4s infinite;
+        }
+
+        @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* ── Kit card ─────────────────────────────────────────────── */
         .kit-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -158,7 +179,6 @@
         .tag-gray   { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
         .tag-purple { background: #F3EEFF; color: #5B21B6; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; }
 
-        
         .obs-card {
             background: var(--warn-bg);
             border: 1px solid var(--warn-bd);
@@ -184,7 +204,7 @@
         .obs-title svg { width: 13px; height: 13px; }
         .obs-text { font-size: 0.875rem; color: var(--text-1); line-height: 1.5; }
 
-        
+        /* ── Progress ─────────────────────────────────────────────── */
         .progress-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -225,7 +245,6 @@
 
         .progress-bar-fill.complete { background: linear-gradient(90deg, var(--success) 0%, #22c55e 100%); }
 
-        
         .complete-banner {
             display: none;
             background: var(--success-bg);
@@ -248,7 +267,7 @@
         .complete-banner svg { width: 20px; height: 20px; color: var(--success); flex-shrink: 0; }
         .complete-banner p { font-size: 0.875rem; font-weight: 600; color: var(--success); }
 
-        
+        /* ── Instruments ──────────────────────────────────────────── */
         .instruments-section { animation: slideUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
         .section-title {
@@ -295,7 +314,7 @@
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            border: 2px solid var(--border-2, #BBC7D9);
+            border: 2px solid #BBC7D9;
             background: var(--surface);
             display: flex;
             align-items: center;
@@ -351,7 +370,6 @@
 
         .instr-comment { font-size: 0.8rem; color: var(--text-3); margin-top: 4px; font-style: italic; }
 
-        
         .pieces-section {
             border-top: 1px solid var(--border);
             background: var(--surface-2);
@@ -360,7 +378,7 @@
             transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .instrument-card.expanded .pieces-section { max-height: 600px; }
+        .instrument-card.expanded .pieces-section { max-height: 9999px; }
         .pieces-section-inner { padding: 12px 16px 14px; }
 
         .pieces-label {
@@ -416,13 +434,13 @@
 
         .piece-note { font-size: 0.8rem; color: var(--text-2); flex: 1; font-style: italic; }
 
-        
-        .empty-state { display: none; text-align: center; padding: 60px 24px; }
+        /* ── Empty / error states ─────────────────────────────────── */
+        .empty-state { text-align: center; padding: 60px 24px; display: none; }
         .empty-state svg { width: 64px; height: 64px; color: var(--border); margin: 0 auto 16px; display: block; }
         .empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
         .empty-state p { font-size: 0.875rem; color: var(--text-3); }
 
-        
+        /* ── Action row ───────────────────────────────────────────── */
         .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -452,12 +470,31 @@
         .action-btn:active { transform: scale(0.96); }
 
         .btn-print { background: var(--navy); color: white; box-shadow: 0 4px 14px rgba(27,58,92,0.25); }
-        .btn-print:hover { background: var(--navy-light, #254E7A); }
+        .btn-print:hover { background: #254E7A; }
 
         .btn-reset { background: var(--surface); color: var(--text-1); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); }
-        .btn-reset:hover { background: var(--surface-2); border-color: var(--border-2, #BBC7D9); }
+        .btn-reset:hover { background: var(--surface-2); border-color: #BBC7D9; }
 
-        
+        /* ── Loading spinner ──────────────────────────────────────── */
+        .loading-wrap {
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .loader {
+            width: 44px;
+            height: 44px;
+            border: 3px solid var(--border);
+            border-top-color: var(--navy);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-wrap p { font-size: 0.9rem; color: var(--text-3); font-weight: 500; }
+
         @media print {
             header, .action-row, .pieces-section { display: none !important; }
             body { background: white; }
@@ -465,7 +502,6 @@
             .content { padding: 0; }
         }
 
-        
         @media (min-width: 480px) {
             .content { padding: 24px 20px; }
             .kit-card { padding: 24px; }
@@ -493,11 +529,17 @@
 
 <div class="content">
 
-    
-    <div class="kit-card" id="kitCard">
+    <!-- Loading state -->
+    <div class="loading-wrap" id="loadingState">
+        <div class="loader"></div>
+        <p>Chargement de la boîte…</p>
+    </div>
+
+    <!-- Kit info card -->
+    <div class="kit-card" id="kitCard" style="display:none;">
         <div class="kit-top">
             <div>
-                <div class="kit-name" id="kitName">Chargement…</div>
+                <div class="kit-name" id="kitName">—</div>
             </div>
             <div class="kit-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -505,7 +547,7 @@
         </div>
         <div class="kit-tags">
             <span class="tag tag-blue" id="serviceTag">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
                 Service
             </span>
             <span class="tag tag-gray" id="dateTag">
@@ -523,8 +565,8 @@
         </div>
     </div>
 
-    
-    <div class="progress-card">
+    <!-- Progress card -->
+    <div class="progress-card" id="progressCard" style="display:none;">
         <div class="progress-header">
             <span class="progress-title">Progression</span>
             <span class="progress-count" id="progressCount">0 / 0</span>
@@ -538,21 +580,21 @@
         </div>
     </div>
 
-    
-    <div class="instruments-section">
+    <!-- Instruments -->
+    <div class="instruments-section" id="instrumentsSection" style="display:none;">
         <div class="section-title">Instruments à vérifier</div>
         <div id="instrumentsList"></div>
     </div>
 
-    
+    <!-- Empty / Error state -->
     <div class="empty-state" id="emptyState">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
-        <h3>Données invalides</h3>
-        <p>Le QR code scanné ne contient pas de données valides.</p>
+        <h3 id="emptyTitle">Boîte introuvable</h3>
+        <p id="emptyMsg">Ce QR code ne correspond à aucune boîte enregistrée.</p>
     </div>
 
-    
-    <div class="action-row">
+    <!-- Action row (always visible once loaded) -->
+    <div class="action-row" id="actionRow" style="display:none;">
         <button class="action-btn btn-print" onclick="window.print()">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
             Imprimer
@@ -566,35 +608,99 @@
 </div>
 
 <script>
-    function getDataFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        const d = params.get('data');
-        if (!d) return null;
-        try { return JSON.parse(decodeURIComponent(escape(atob(d)))); }
-        catch(e) { return null; }
+    // ─── State ─────────────────────────────────────────────────────────────────
+    let checkedSet  = new Set();
+    let totalCount  = 0;
+
+    // ─── Supabase client ───────────────────────────────────────────────────────
+    const { createClient } = supabase;
+    let db = null;
+
+    function getDB() {
+        if (db) return db;
+        if (!STERIFLOW_CONFIG.supabaseUrl || STERIFLOW_CONFIG.supabaseUrl === 'YOUR_SUPABASE_URL') return null;
+        db = createClient(STERIFLOW_CONFIG.supabaseUrl, STERIFLOW_CONFIG.supabaseAnonKey);
+        return db;
     }
 
-    let checkedSet = new Set();
-    let totalCount = 0;
+    // ─── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+        const params = new URLSearchParams(window.location.search);
+        const kitId  = params.get('id');
 
-    function init() {
-        const data = getDataFromURL();
+        // Legacy support: old QR codes used ?data= with Base64 payload
+        const rawData = params.get('data');
 
-        if (!data || !data.instruments || !data.instruments.length) {
-            document.getElementById('kitCard').style.display = 'none';
-            document.querySelector('.progress-card').style.display = 'none';
-            document.querySelector('.instruments-section').style.display = 'none';
-            document.getElementById('emptyState').style.display = 'block';
+        if (kitId) {
+            await loadFromDB(kitId);
+        } else if (rawData) {
+            loadFromBase64(rawData);
+        } else {
+            showError('Aucun identifiant de boîte dans l\'URL.');
+        }
+    }
+
+    // ─── Load from Supabase (new method) ──────────────────────────────────────
+    async function loadFromDB(kitId) {
+        const client = getDB();
+        if (!client) {
+            showError('Base de données non configurée. Contactez l\'administrateur.', 'Configuration requise');
             return;
         }
+
+        try {
+            const { data, error } = await client
+                .from('kits')
+                .select('*')
+                .eq('kit_id', kitId)
+                .single();
+
+            if (error || !data) {
+                showError(`Boîte "${kitId}" introuvable dans la base.`);
+                return;
+            }
+
+            const kitData = {
+                kitId:        data.kit_id,
+                kitName:      data.kit_name,
+                service:      data.service,
+                instruments:  data.instruments || [],
+                observations: data.observations,
+                date:         new Date(data.created_at).toLocaleDateString('fr-FR')
+            };
+
+            renderKit(kitData);
+        } catch (err) {
+            console.error(err);
+            showError(`Erreur de chargement: ${err.message}`);
+        }
+    }
+
+    // ─── Load from Base64 URL (legacy QR codes) ───────────────────────────────
+    function loadFromBase64(encoded) {
+        try {
+            const kitData = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+            if (!kitData || !kitData.instruments || !kitData.instruments.length) {
+                showError('Les données du QR code sont invalides ou vides.');
+                return;
+            }
+            renderKit(kitData);
+        } catch (e) {
+            showError('Impossible de lire les données du QR code (format invalide).');
+        }
+    }
+
+    // ─── Render kit ────────────────────────────────────────────────────────────
+    function renderKit(data) {
+        document.getElementById('loadingState').style.display = 'none';
 
         document.getElementById('kitName').textContent = data.kitName || 'Boîte Médicale';
         document.getElementById('serviceTag').innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
-            ${data.service || 'Service'}`;
+            ${escapeHtml(data.service || 'Service')}`;
         document.getElementById('dateTag').innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            ${data.date || new Date().toLocaleDateString('fr-FR')}`;
+            ${escapeHtml(data.date || new Date().toLocaleDateString('fr-FR'))}`;
         document.getElementById('kitIdTag').textContent = data.kitId || 'N/A';
 
         if (data.observations && data.observations.trim()) {
@@ -605,38 +711,45 @@
         totalCount = data.instruments.length;
         renderInstruments(data.instruments);
         updateProgress();
+
+        document.getElementById('kitCard').style.display = 'block';
+        document.getElementById('progressCard').style.display = 'block';
+        document.getElementById('instrumentsSection').style.display = 'block';
+        document.getElementById('actionRow').style.display = 'grid';
     }
 
+    // ─── Render instruments ────────────────────────────────────────────────────
     function renderInstruments(instruments) {
         const list = document.getElementById('instrumentsList');
         list.innerHTML = '';
+
+        const stateMap   = { 'fiable': 'state-fiable', 'non fiable': 'state-non-fiable', 'a verifier': 'state-a-verifier' };
+        const stateLabel = { 'fiable': 'Fiable', 'non fiable': 'Non fiable', 'a verifier': 'À vérifier' };
+        const stateIcon  = {
+            'fiable':     '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>',
+            'non fiable': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>',
+            'a verifier': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        };
 
         instruments.forEach((instr, idx) => {
             const card = document.createElement('div');
             card.className = 'instrument-card';
             card.dataset.idx = idx;
-            card.style.animation = `slideUp 0.45s ${0.04 + idx * 0.06}s cubic-bezier(0.16, 1, 0.3, 1) both`;
+            card.style.animation = `slideUp 0.45s ${0.04 + idx * 0.045}s cubic-bezier(0.16, 1, 0.3, 1) both`;
 
-            const hasPieces = instr.pieces && instr.pieces.length > 1;
-            const stateMap = { 'fiable': 'state-fiable', 'non fiable': 'state-non-fiable', 'a verifier': 'state-a-verifier' };
-            const stateLabel = { 'fiable': 'Fiable', 'non fiable': 'Non fiable', 'a verifier': 'À vérifier' };
-            const stateIcon = {
-                'fiable':     '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>',
-                'non fiable': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>',
-                'a verifier': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-            };
-
+            const hasPieces    = instr.pieces && instr.pieces.length > 1;
             const overallState = instr.pieces?.[0]?.state || 'fiable';
 
+            // Build pieces HTML
             let piecesHTML = '';
             if (instr.pieces && instr.pieces.length > 0) {
                 piecesHTML = `<div class="pieces-section">
                     <div class="pieces-section-inner">
-                        <div class="pieces-label">Détail par pièce</div>`;
+                        <div class="pieces-label">Détail par pièce (${instr.pieces.length})</div>`;
                 instr.pieces.forEach((piece, pi) => {
-                    const cls = stateMap[piece.state] || 'state-fiable';
+                    const cls = stateMap[piece.state]   || 'state-fiable';
                     const lbl = stateLabel[piece.state] || piece.state;
-                    const ico = stateIcon[piece.state] || stateIcon['fiable'];
+                    const ico = stateIcon[piece.state]  || stateIcon['fiable'];
                     piecesHTML += `
                     <div class="piece-item">
                         <div class="piece-num-badge">${pi + 1}</div>
@@ -663,7 +776,7 @@
                             ? '<span class="instr-tag tag-avail"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Disponible</span>'
                             : '<span class="instr-tag tag-unavail">Non disponible</span>'
                         }
-                        ${(!hasPieces)
+                        ${!hasPieces
                             ? `<span class="piece-state-badge ${stateMap[overallState] || 'state-fiable'}" style="padding:3px 8px;font-size:.72rem;">${stateIcon[overallState] || stateIcon.fiable}${stateLabel[overallState] || overallState}</span>`
                             : `<span class="instr-tag" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);">${instr.pieces.length} pièces</span>`
                         }
@@ -694,6 +807,7 @@
         });
     }
 
+    // ─── Toggle check ──────────────────────────────────────────────────────────
     function toggleCheck(card, idx) {
         card.classList.add('checking');
         card.addEventListener('animationend', () => card.classList.remove('checking'), { once: true });
@@ -717,6 +831,7 @@
         document.getElementById('completeBanner').classList.toggle('show', pct === 100);
     }
 
+    // ─── Reset ────────────────────────────────────────────────────────────────
     document.getElementById('resetBtn').addEventListener('click', () => {
         if (!confirm('Réinitialiser la liste de vérification?')) return;
         checkedSet.clear();
@@ -724,10 +839,20 @@
         updateProgress();
     });
 
+    // ─── Error state ──────────────────────────────────────────────────────────
+    function showError(msg, title = 'Boîte introuvable') {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('emptyTitle').textContent = title;
+        document.getElementById('emptyMsg').textContent   = msg;
+        document.getElementById('emptyState').style.display = 'block';
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
     function escapeHtml(s) {
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    // ─── Boot ─────────────────────────────────────────────────────────────────
     init();
 </script>
 </body>

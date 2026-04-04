@@ -1,27 +1,29 @@
-// SteriFlow Configuration
-// Update these values to match your GitHub Pages deployment
+
 
 const STERIFLOW_CONFIG = {
-    // Your GitHub Pages URL (without trailing slash)
+
     githubPagesUrl: 'https://yassine-gharbi86.github.io/SteriFlow-Prototype',
-    
-    // Repository name (used for GitHub Pages path)
+
     repoName: 'SteriFlow-Prototype',
-    
-    // Your GitHub username
-    githubUsername: 'Yassine-Gharbi86'
+
+
+    githubUsername: 'Yassine-Gharbi86',
+
+
+    supabaseUrl:     'https://djrxmohvcloqjjgrzooe.supabase.com',
+    supabaseAnonKey: 'sb_publishable_QVK8sq_4dNJ3TkptPUA7ag_jmEhGZsW'
 };
 
-// Auto-detect if running on GitHub Pages or locally
-function getViewerUrl(encodedData) {
+// ─── URL helpers ───────────────────────────────────────────────────────────────
+
+/**
+ * Returns the viewer URL for a kit, using its short ID.
+ * The QR code will only ever encode a tiny URL regardless of how many instruments.
+ */
+function getViewerUrl(kitId) {
     const isGitHubPages = window.location.hostname.includes('github.io');
-    
-    if (isGitHubPages) {
-        // Use the configured GitHub Pages URL
-        return `${STERIFLOW_CONFIG.githubPagesUrl}/viewer.html?data=${encodedData}`;
-    } else {
-        // Local development - use relative path
-        const baseUrl = window.location.href.split('?')[0].replace('index.html', '');
-        return `${baseUrl}viewer.html?data=${encodedData}`;
-    }
+    const base = isGitHubPages
+        ? STERIFLOW_CONFIG.githubPagesUrl
+        : window.location.href.split('?')[0].replace(/[^/]*$/, '').replace(/\/$/, '');
+    return `${base}/viewer.html?id=${encodeURIComponent(kitId)}`;
 }

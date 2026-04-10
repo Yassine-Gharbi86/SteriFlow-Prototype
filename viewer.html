@@ -6,7 +6,6 @@
     <title>SteriFlow — Vérification</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Supabase JS client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
@@ -102,25 +101,6 @@
         }
 
         .content { max-width: 680px; margin: 0 auto; padding: 20px 16px; }
-
-        .skeleton-wrap { animation: slideUp 0.5s ease both; }
-
-        .skeleton-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 24px;
-            margin-bottom: 16px;
-        }
-
-        .skeleton-line {
-            background: linear-gradient(90deg, var(--border) 25%, var(--surface-2) 50%, var(--border) 75%);
-            background-size: 200% 100%;
-            border-radius: 6px;
-            animation: shimmer 1.4s infinite;
-        }
-
-        @keyframes shimmer { to { background-position: -200% 0; } }
 
         .kit-card {
             background: var(--surface);
@@ -276,7 +256,6 @@
             padding: 0 2px;
         }
 
-        /* ── Disponible instrument card ── */
         .instrument-card {
             background: var(--surface);
             border: 1.5px solid var(--border);
@@ -305,7 +284,6 @@
             100% { transform: scale(1); }
         }
 
-        /* ── Non-disponible instrument card ── */
         .instrument-card.unavailable {
             cursor: not-allowed;
             opacity: 0.6;
@@ -344,7 +322,6 @@
         .instrument-card.checked .check-circle { background: var(--success); border-color: var(--success); }
         .instrument-card.checked .check-circle svg { opacity: 1; transform: scale(1); }
 
-        /* Unavailable: show a lock/ban icon instead of check circle */
         .instrument-card.unavailable .check-circle {
             background: var(--surface-2);
             border-color: var(--border);
@@ -455,6 +432,7 @@
         .empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
         .empty-state p { font-size: 0.875rem; color: var(--text-3); }
 
+        /* ── Action row — now 3 buttons ── */
         .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -483,16 +461,22 @@
         .action-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
         .action-btn:active { transform: scale(0.96); }
 
-        .btn-print { background: var(--navy); color: white; box-shadow: 0 4px 14px rgba(27,58,92,0.25); }
+        .btn-print  { background: var(--navy); color: white; box-shadow: 0 4px 14px rgba(27,58,92,0.25); }
         .btn-print:hover { background: #254E7A; }
 
-        .btn-reset { background: var(--surface); color: var(--text-1); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); }
+        .btn-reset  { background: var(--surface); color: var(--text-1); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); }
         .btn-reset:hover { background: var(--surface-2); border-color: #BBC7D9; }
 
-        .loading-wrap {
-            text-align: center;
-            padding: 80px 24px;
+        /* Report button — spans full width */
+        .btn-report {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #C0392B 0%, #E74C3C 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(192,57,43,0.28);
         }
+        .btn-report:hover { filter: brightness(1.06); }
+
+        .loading-wrap { text-align: center; padding: 80px 24px; }
 
         .loader {
             width: 44px;
@@ -505,11 +489,292 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .loading-wrap p { font-size: 0.9rem; color: var(--text-3); font-weight: 500; }
 
+        /* ══════════════════════════════════════════════
+           REPORT PANEL OVERLAY
+        ══════════════════════════════════════════════ */
+        .report-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .report-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(16, 39, 66, 0.55);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .report-sheet {
+            position: relative;
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            padding: 0 0 env(safe-area-inset-bottom, 20px);
+            box-shadow: 0 -8px 40px rgba(20,30,45,0.18);
+            transform: translateY(100%);
+            transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 92dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Open state */
+        .report-overlay.open { pointer-events: all; }
+        .report-overlay.open .report-backdrop { opacity: 1; }
+        .report-overlay.open .report-sheet    { transform: translateY(0); }
+
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 99px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px 14px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .sheet-title-group { display: flex; align-items: center; gap: 10px; }
+
+        .sheet-icon {
+            width: 36px;
+            height: 36px;
+            background: #FEF2F2;
+            border: 1px solid #D97575;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sheet-icon svg { width: 18px; height: 18px; color: #C0392B; }
+
+        .sheet-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-1);
+        }
+
+        .sheet-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-3);
+            margin-top: 1px;
+        }
+
+        .sheet-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-2);
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .sheet-close:hover { background: var(--bg); }
+        .sheet-close svg { width: 16px; height: 16px; }
+
+        .sheet-body {
+            overflow-y: auto;
+            padding: 20px;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Form fields */
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+        .field-full { margin-bottom: 14px; }
+
+        .field-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-2);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .field-label span { color: #C0392B; margin-left: 2px; }
+
+        .field-input,
+        .field-textarea {
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9375rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .field-input:focus,
+        .field-textarea:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(27, 58, 92, 0.12);
+        }
+
+        .field-input.error,
+        .field-textarea.error {
+            border-color: #D97575;
+            box-shadow: 0 0 0 3px rgba(217,117,117,0.15);
+        }
+
+        .field-textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.55;
+        }
+
+        .field-error {
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .field-error.show { display: block; }
+
+        /* Severity selector */
+        .severity-row { display: flex; gap: 8px; margin-bottom: 14px; }
+
+        .severity-btn {
+            flex: 1;
+            padding: 8px 6px;
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .severity-btn.active-low    { background: var(--warn-bg);    border-color: var(--warn-bd);    color: var(--warn); }
+        .severity-btn.active-medium { background: #FFF0E8;           border-color: #E07A3B;           color: #7B3A10; }
+        .severity-btn.active-high   { background: var(--danger-bg);  border-color: var(--danger-bd);  color: var(--danger); }
+
+        /* Send button */
+        .sheet-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            flex-shrink: 0;
+        }
+
+        .btn-send {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #C0392B 0%, #E74C3C 100%);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(192,57,43,0.3);
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-send:hover { filter: brightness(1.06); }
+        .btn-send:active { transform: scale(0.97); }
+        .btn-send svg { width: 18px; height: 18px; }
+        .btn-send:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+        /* Success state */
+        .send-success {
+            display: none;
+            text-align: center;
+            padding: 32px 20px 20px;
+            animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .send-success.show { display: block; }
+
+        .success-circle {
+            width: 72px;
+            height: 72px;
+            background: var(--success-bg);
+            border: 2px solid var(--success-bd);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            animation: bounceIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        .success-circle svg { width: 32px; height: 32px; color: var(--success); }
+
+        .success-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-1);
+            margin-bottom: 8px;
+        }
+
+        .success-msg {
+            font-size: 0.875rem;
+            color: var(--text-3);
+            line-height: 1.6;
+        }
+
+        .btn-close-success {
+            margin-top: 20px;
+            padding: 11px 24px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-1);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-close-success:hover { background: var(--bg); }
+
         @media print {
-            header, .action-row, .pieces-section { display: none !important; }
+            header, .action-row, .pieces-section, .report-overlay { display: none !important; }
             body { background: white; }
             .instrument-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
             .content { padding: 0; }
@@ -519,10 +784,12 @@
             .content { padding: 24px 20px; }
             .kit-card { padding: 24px; }
             .instr-main { padding: 16px 20px; }
+            .report-sheet { border-radius: 20px 20px 0 0; }
         }
 
         @media (min-width: 640px) {
             .content { padding: 28px 24px; }
+            .report-sheet { max-width: 680px; margin: 0 auto; border-radius: 20px 20px 0 0; }
         }
     </style>
 </head>
@@ -542,13 +809,11 @@
 
 <div class="content">
 
-    <!-- Loading state -->
     <div class="loading-wrap" id="loadingState">
         <div class="loader"></div>
         <p>Chargement de la boîte…</p>
     </div>
 
-    <!-- Kit info card -->
     <div class="kit-card" id="kitCard" style="display:none;">
         <div class="kit-top">
             <div>
@@ -578,7 +843,6 @@
         </div>
     </div>
 
-    <!-- Progress card -->
     <div class="progress-card" id="progressCard" style="display:none;">
         <div class="progress-header">
             <span class="progress-title">Progression</span>
@@ -593,20 +857,17 @@
         </div>
     </div>
 
-    <!-- Instruments -->
     <div class="instruments-section" id="instrumentsSection" style="display:none;">
         <div class="section-title">Instruments à vérifier</div>
         <div id="instrumentsList"></div>
     </div>
 
-    <!-- Empty / Error state -->
     <div class="empty-state" id="emptyState">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
         <h3 id="emptyTitle">Boîte introuvable</h3>
         <p id="emptyMsg">Ce QR code ne correspond à aucune boîte enregistrée.</p>
     </div>
 
-    <!-- Action row -->
     <div class="action-row" id="actionRow" style="display:none;">
         <button class="action-btn btn-print" onclick="window.print()">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
@@ -616,16 +877,106 @@
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             Réinitialiser
         </button>
+        <!-- Report button — full width -->
+        <button class="action-btn btn-report" id="reportBtn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            Signaler un problème
+        </button>
     </div>
 
+</div>
+
+<!-- ══════════════════════════════════════════════
+     REPORT PANEL
+══════════════════════════════════════════════ -->
+<div class="report-overlay" id="reportOverlay" role="dialog" aria-modal="true" aria-label="Signalement d'un problème">
+    <div class="report-backdrop" id="reportBackdrop"></div>
+    <div class="report-sheet" id="reportSheet">
+
+        <div class="sheet-handle"></div>
+
+        <div class="sheet-header">
+            <div class="sheet-title-group">
+                <div class="sheet-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                </div>
+                <div>
+                    <div class="sheet-title">Signaler un problème</div>
+                    <div class="sheet-subtitle" id="sheetKitRef">Boîte —</div>
+                </div>
+            </div>
+            <button class="sheet-close" id="closeReportBtn" aria-label="Fermer">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <div class="sheet-body" id="reportFormWrap">
+
+            <div class="field-row">
+                <div>
+                    <label class="field-label" for="fieldNom">Nom<span>*</span></label>
+                    <input class="field-input" id="fieldNom" type="text" placeholder="Dupont" autocomplete="family-name">
+                    <div class="field-error" id="errNom">Champ requis</div>
+                </div>
+                <div>
+                    <label class="field-label" for="fieldPrenom">Prénom<span>*</span></label>
+                    <input class="field-input" id="fieldPrenom" type="text" placeholder="Marie" autocomplete="given-name">
+                    <div class="field-error" id="errPrenom">Champ requis</div>
+                </div>
+            </div>
+
+            <div class="field-full">
+                <label class="field-label" for="fieldService">Service / Département<span>*</span></label>
+                <input class="field-input" id="fieldService" type="text" placeholder="ex : Bloc opératoire, Réanimation…" autocomplete="organization">
+                <div class="field-error" id="errService">Champ requis</div>
+            </div>
+
+            <div class="field-full">
+                <label class="field-label">Niveau de priorité</label>
+                <div class="severity-row">
+                    <button class="severity-btn" data-sev="low"    type="button">🟡 Faible</button>
+                    <button class="severity-btn active-medium" data-sev="medium" type="button">🟠 Moyen</button>
+                    <button class="severity-btn" data-sev="high"   type="button">🔴 Urgent</button>
+                </div>
+            </div>
+
+            <div class="field-full">
+                <label class="field-label" for="fieldReport">Description du problème<span>*</span></label>
+                <textarea class="field-textarea" id="fieldReport" placeholder="Décrivez le problème constaté : instrument manquant, endommagé, contaminé, erreur dans la liste…"></textarea>
+                <div class="field-error" id="errReport">Veuillez décrire le problème</div>
+            </div>
+
+        </div>
+
+        <!-- Success state (hidden by default) -->
+        <div class="send-success" id="sendSuccess">
+            <div class="success-circle">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="success-title">Signalement envoyé ✓</div>
+            <div class="success-msg">Votre rapport a bien été transmis à l'administrateur. Une vérification sera effectuée dans les plus brefs délais.</div>
+            <button class="btn-close-success" id="closeSuccessBtn">Fermer</button>
+        </div>
+
+        <div class="sheet-footer" id="reportFooter">
+            <button class="btn-send" id="sendReportBtn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                Envoyer le rapport
+            </button>
+        </div>
+
+    </div>
 </div>
 
 <script>
     // ─── State ─────────────────────────────────────────────────────────────────
     let checkedSet  = new Set();
-    let totalCount  = 0;   // only counts disponible instruments
+    let totalCount  = 0;
+    let currentKitName = '';
+    let selectedSeverity = 'medium';
 
-    // ─── Supabase client ───────────────────────────────────────────────────────
+    // ─── Supabase ──────────────────────────────────────────────────────────────
     const { createClient } = supabase;
     let db = null;
 
@@ -638,74 +989,46 @@
 
     // ─── Init ──────────────────────────────────────────────────────────────────
     async function init() {
-        const params = new URLSearchParams(window.location.search);
-        const kitId  = params.get('id');
+        const params  = new URLSearchParams(window.location.search);
+        const kitId   = params.get('id');
         const rawData = params.get('data');
 
-        if (kitId) {
-            await loadFromDB(kitId);
-        } else if (rawData) {
-            loadFromBase64(rawData);
-        } else {
-            showError('Aucun identifiant de boîte dans l\'URL.');
-        }
+        if (kitId)          await loadFromDB(kitId);
+        else if (rawData)   loadFromBase64(rawData);
+        else                showError('Aucun identifiant de boîte dans l\'URL.');
     }
 
-    // ─── Load from Supabase ───────────────────────────────────────────────────
     async function loadFromDB(kitId) {
         const client = getDB();
-        if (!client) {
-            showError('Base de données non configurée. Contactez l\'administrateur.', 'Configuration requise');
-            return;
-        }
-
+        if (!client) { showError('Base de données non configurée.', 'Configuration requise'); return; }
         try {
-            const { data, error } = await client
-                .from('kits')
-                .select('*')
-                .eq('kit_id', kitId)
-                .single();
-
-            if (error || !data) {
-                showError(`Boîte "${kitId}" introuvable dans la base.`);
-                return;
-            }
-
-            const kitData = {
+            const { data, error } = await client.from('kits').select('*').eq('kit_id', kitId).single();
+            if (error || !data) { showError(`Boîte "${kitId}" introuvable.`); return; }
+            renderKit({
                 kitId:        data.kit_id,
                 kitName:      data.kit_name,
                 service:      data.service,
                 instruments:  data.instruments || [],
                 observations: data.observations,
                 date:         new Date(data.created_at).toLocaleDateString('fr-FR')
-            };
-
-            renderKit(kitData);
-        } catch (err) {
-            console.error(err);
-            showError(`Erreur de chargement: ${err.message}`);
-        }
+            });
+        } catch (err) { showError(`Erreur: ${err.message}`); }
     }
 
-    // ─── Load from Base64 (legacy) ────────────────────────────────────────────
     function loadFromBase64(encoded) {
         try {
             const kitData = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-            if (!kitData || !kitData.instruments || !kitData.instruments.length) {
-                showError('Les données du QR code sont invalides ou vides.');
-                return;
-            }
+            if (!kitData?.instruments?.length) { showError('Données invalides.'); return; }
             renderKit(kitData);
-        } catch (e) {
-            showError('Impossible de lire les données du QR code (format invalide).');
-        }
+        } catch (e) { showError('Format de QR code invalide.'); }
     }
 
-    // ─── Render kit ────────────────────────────────────────────────────────────
+    // ─── Render ────────────────────────────────────────────────────────────────
     function renderKit(data) {
         document.getElementById('loadingState').style.display = 'none';
+        currentKitName = data.kitName || 'Boîte Médicale';
 
-        document.getElementById('kitName').textContent = data.kitName || 'Boîte Médicale';
+        document.getElementById('kitName').textContent = currentKitName;
         document.getElementById('serviceTag').innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
             ${escapeHtml(data.service || 'Service')}`;
@@ -714,12 +1037,11 @@
             ${escapeHtml(data.date || new Date().toLocaleDateString('fr-FR'))}`;
         document.getElementById('kitIdTag').textContent = data.kitId || 'N/A';
 
-        if (data.observations && data.observations.trim()) {
+        if (data.observations?.trim()) {
             document.getElementById('obsText').textContent = data.observations;
             document.getElementById('obsCard').style.display = 'block';
         }
 
-        // Only disponible instruments count toward progress
         totalCount = data.instruments.filter(i => i.available !== false).length;
         renderInstruments(data.instruments);
         updateProgress();
@@ -728,9 +1050,11 @@
         document.getElementById('progressCard').style.display = 'block';
         document.getElementById('instrumentsSection').style.display = 'block';
         document.getElementById('actionRow').style.display = 'grid';
+
+        // Populate kit reference in sheet subtitle
+        document.getElementById('sheetKitRef').textContent = currentKitName + (data.kitId ? ` — ${data.kitId}` : '');
     }
 
-    // ─── Render instruments ────────────────────────────────────────────────────
     function renderInstruments(instruments) {
         const list = document.getElementById('instrumentsList');
         list.innerHTML = '';
@@ -743,11 +1067,6 @@
             'a verifier': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
         };
 
-        // Separate disponible from non-disponible
-        const disponible    = instruments.filter(i => i.available !== false);
-        const nonDisponible = instruments.filter(i => i.available === false);
-
-        // Build a global index map so checkedSet indices stay consistent
         const buildCard = (instr, globalIdx) => {
             const isUnavailable = instr.available === false;
             const card = document.createElement('div');
@@ -758,18 +1077,14 @@
             const hasPieces    = !isUnavailable && instr.pieces && instr.pieces.length > 1;
             const overallState = instr.pieces?.[0]?.state || 'fiable';
 
-            // Pieces detail (only for disponible)
             let piecesHTML = '';
-            if (!isUnavailable && instr.pieces && instr.pieces.length > 0) {
-                piecesHTML = `<div class="pieces-section">
-                    <div class="pieces-section-inner">
-                        <div class="pieces-label">Détail par pièce (${instr.pieces.length})</div>`;
+            if (!isUnavailable && instr.pieces?.length > 0) {
+                piecesHTML = `<div class="pieces-section"><div class="pieces-section-inner"><div class="pieces-label">Détail par pièce (${instr.pieces.length})</div>`;
                 instr.pieces.forEach((piece, pi) => {
-                    const cls = stateMap[piece.state]   || 'state-fiable';
+                    const cls = stateMap[piece.state] || 'state-fiable';
                     const lbl = stateLabel[piece.state] || piece.state;
                     const ico = stateIcon[piece.state]  || stateIcon['fiable'];
-                    piecesHTML += `
-                    <div class="piece-item">
+                    piecesHTML += `<div class="piece-item">
                         <div class="piece-num-badge">${pi + 1}</div>
                         <span class="piece-state-badge ${cls}">${ico}${lbl}</span>
                         ${piece.note ? `<span class="piece-note">${escapeHtml(piece.note)}</span>` : ''}
@@ -778,7 +1093,6 @@
                 piecesHTML += `</div></div>`;
             }
 
-            // Check-circle icon: lock SVG for unavailable
             const circleIcon = isUnavailable
                 ? `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--text-3);opacity:0.7;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`
                 : `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>`;
@@ -789,10 +1103,7 @@
                 <div class="instr-info">
                     <div class="instr-name">${escapeHtml(instr.name) || '<em style="color:var(--text-3)">Sans nom</em>'}</div>
                     <div class="instr-tags">
-                        ${!isUnavailable ? `<span class="instr-tag tag-qty">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
-                            Qté: ${instr.quantity}
-                        </span>` : ''}
+                        ${!isUnavailable ? `<span class="instr-tag tag-qty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>Qté: ${instr.quantity}</span>` : ''}
                         ${isUnavailable
                             ? '<span class="instr-tag tag-unavail">Non disponible</span>'
                             : '<span class="instr-tag tag-avail"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Disponible</span>'
@@ -808,20 +1119,12 @@
             </div>
             ${piecesHTML}`;
 
-            // ── Only attach interactions to disponible cards ──
             if (!isUnavailable) {
                 const mainRow = card.querySelector('.instr-main');
                 const chevron = card.querySelector('.instr-chevron');
-
                 if (hasPieces) {
-                    chevron.addEventListener('click', e => {
-                        e.stopPropagation();
-                        card.classList.toggle('expanded');
-                    });
-                    mainRow.addEventListener('click', e => {
-                        if (e.target.closest('.instr-chevron')) return;
-                        toggleCheck(card, globalIdx);
-                    });
+                    chevron.addEventListener('click', e => { e.stopPropagation(); card.classList.toggle('expanded'); });
+                    mainRow.addEventListener('click', e => { if (e.target.closest('.instr-chevron')) return; toggleCheck(card, globalIdx); });
                 } else {
                     card.addEventListener('click', () => toggleCheck(card, globalIdx));
                 }
@@ -833,18 +1136,11 @@
         instruments.forEach((instr, idx) => buildCard(instr, idx));
     }
 
-    // ─── Toggle check (only for disponible) ───────────────────────────────────
     function toggleCheck(card, idx) {
         card.classList.add('checking');
         card.addEventListener('animationend', () => card.classList.remove('checking'), { once: true });
-
-        if (checkedSet.has(idx)) {
-            checkedSet.delete(idx);
-            card.classList.remove('checked');
-        } else {
-            checkedSet.add(idx);
-            card.classList.add('checked');
-        }
+        if (checkedSet.has(idx)) { checkedSet.delete(idx); card.classList.remove('checked'); }
+        else { checkedSet.add(idx); card.classList.add('checked'); }
         updateProgress();
     }
 
@@ -857,7 +1153,6 @@
         document.getElementById('completeBanner').classList.toggle('show', totalCount > 0 && pct === 100);
     }
 
-    // ─── Reset ────────────────────────────────────────────────────────────────
     document.getElementById('resetBtn').addEventListener('click', () => {
         if (!confirm('Réinitialiser la liste de vérification?')) return;
         checkedSet.clear();
@@ -865,7 +1160,6 @@
         updateProgress();
     });
 
-    // ─── Error state ──────────────────────────────────────────────────────────
     function showError(msg, title = 'Boîte introuvable') {
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('emptyTitle').textContent = title;
@@ -873,10 +1167,135 @@
         document.getElementById('emptyState').style.display = 'block';
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────────
     function escapeHtml(s) {
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+
+    // ══════════════════════════════════════════════
+    //  REPORT PANEL LOGIC
+    // ══════════════════════════════════════════════
+
+    const overlay     = document.getElementById('reportOverlay');
+    const backdrop    = document.getElementById('reportBackdrop');
+    const reportBtn   = document.getElementById('reportBtn');
+    const closeBtn    = document.getElementById('closeReportBtn');
+    const sendBtn     = document.getElementById('sendReportBtn');
+    const formWrap    = document.getElementById('reportFormWrap');
+    const successWrap = document.getElementById('sendSuccess');
+    const footer      = document.getElementById('reportFooter');
+    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+
+    // Severity buttons
+    document.querySelectorAll('.severity-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.severity-btn').forEach(b => b.className = 'severity-btn');
+            const sev = btn.dataset.sev;
+            selectedSeverity = sev;
+            btn.classList.add(`active-${sev}`);
+        });
+    });
+
+    function openReport() {
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        // Focus first field after animation
+        setTimeout(() => document.getElementById('fieldNom').focus(), 420);
+    }
+
+    function closeReport() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function resetForm() {
+        ['fieldNom','fieldPrenom','fieldService','fieldReport'].forEach(id => {
+            document.getElementById(id).value = '';
+            document.getElementById(id).classList.remove('error');
+        });
+        ['errNom','errPrenom','errService','errReport'].forEach(id => {
+            document.getElementById(id).classList.remove('show');
+        });
+        // Reset severity to medium
+        document.querySelectorAll('.severity-btn').forEach(b => b.className = 'severity-btn');
+        document.querySelector('[data-sev="medium"]').classList.add('active-medium');
+        selectedSeverity = 'medium';
+        // Show form, hide success
+        formWrap.style.display = '';
+        successWrap.classList.remove('show');
+        footer.style.display = '';
+    }
+
+    reportBtn.addEventListener('click', () => { resetForm(); openReport(); });
+    closeBtn.addEventListener('click', closeReport);
+    backdrop.addEventListener('click', closeReport);
+    closeSuccessBtn.addEventListener('click', closeReport);
+
+    // Close on Escape
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeReport(); });
+
+    // Validation + send
+    sendBtn.addEventListener('click', () => {
+        let valid = true;
+
+        const fields = [
+            { id: 'fieldNom',     errId: 'errNom' },
+            { id: 'fieldPrenom',  errId: 'errPrenom' },
+            { id: 'fieldService', errId: 'errService' },
+            { id: 'fieldReport',  errId: 'errReport' },
+        ];
+
+        fields.forEach(({ id, errId }) => {
+            const el  = document.getElementById(id);
+            const err = document.getElementById(errId);
+            if (!el.value.trim()) {
+                el.classList.add('error');
+                err.classList.add('show');
+                valid = false;
+            } else {
+                el.classList.remove('error');
+                err.classList.remove('show');
+            }
+        });
+
+        if (!valid) return;
+
+        // Collect report data (ready for backend)
+        const reportPayload = {
+            nom:       document.getElementById('fieldNom').value.trim(),
+            prenom:    document.getElementById('fieldPrenom').value.trim(),
+            service:   document.getElementById('fieldService').value.trim(),
+            severity:  selectedSeverity,
+            message:   document.getElementById('fieldReport').value.trim(),
+            kitName:   currentKitName,
+            timestamp: new Date().toISOString(),
+        };
+
+        console.log('[SteriFlow] Report payload (backend ready):', reportPayload);
+
+        // Simulate sending → show success
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;animation:spin 0.7s linear infinite;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Envoi…`;
+
+        setTimeout(() => {
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Envoyer le rapport`;
+            // Transition to success screen
+            formWrap.style.display = 'none';
+            footer.style.display   = 'none';
+            successWrap.classList.add('show');
+        }, 900);
+    });
+
+    // Clear error on input
+    ['fieldNom','fieldPrenom','fieldService','fieldReport'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', () => {
+            if (el.value.trim()) {
+                el.classList.remove('error');
+                document.getElementById('err' + id.replace('field','')).classList.remove('show');
+            }
+        });
+    });
 
     // ─── Boot ─────────────────────────────────────────────────────────────────
     init();

@@ -103,7 +103,6 @@
 
         .content { max-width: 680px; margin: 0 auto; padding: 20px 16px; }
 
-        /* ── Loading skeleton ─────────────────────────────────────── */
         .skeleton-wrap { animation: slideUp 0.5s ease both; }
 
         .skeleton-card {
@@ -123,7 +122,6 @@
 
         @keyframes shimmer { to { background-position: -200% 0; } }
 
-        /* ── Kit card ─────────────────────────────────────────────── */
         .kit-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -204,7 +202,6 @@
         .obs-title svg { width: 13px; height: 13px; }
         .obs-text { font-size: 0.875rem; color: var(--text-1); line-height: 1.5; }
 
-        /* ── Progress ─────────────────────────────────────────────── */
         .progress-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -267,7 +264,6 @@
         .complete-banner svg { width: 20px; height: 20px; color: var(--success); flex-shrink: 0; }
         .complete-banner p { font-size: 0.875rem; font-weight: 600; color: var(--success); }
 
-        /* ── Instruments ──────────────────────────────────────────── */
         .instruments-section { animation: slideUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
         .section-title {
@@ -280,6 +276,7 @@
             padding: 0 2px;
         }
 
+        /* ── Disponible instrument card ── */
         .instrument-card {
             background: var(--surface);
             border: 1.5px solid var(--border);
@@ -308,6 +305,18 @@
             100% { transform: scale(1); }
         }
 
+        /* ── Non-disponible instrument card ── */
+        .instrument-card.unavailable {
+            cursor: not-allowed;
+            opacity: 0.6;
+            background: var(--surface-2);
+            border-color: var(--border);
+            box-shadow: none;
+        }
+
+        .instrument-card.unavailable:active { transform: none; }
+        .instrument-card.unavailable:hover  { border-color: var(--border); box-shadow: none; }
+
         .instr-main { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
 
         .check-circle {
@@ -334,6 +343,13 @@
 
         .instrument-card.checked .check-circle { background: var(--success); border-color: var(--success); }
         .instrument-card.checked .check-circle svg { opacity: 1; transform: scale(1); }
+
+        /* Unavailable: show a lock/ban icon instead of check circle */
+        .instrument-card.unavailable .check-circle {
+            background: var(--surface-2);
+            border-color: var(--border);
+            border-style: dashed;
+        }
 
         .instr-info { flex: 1; min-width: 0; }
 
@@ -434,13 +450,11 @@
 
         .piece-note { font-size: 0.8rem; color: var(--text-2); flex: 1; font-style: italic; }
 
-        /* ── Empty / error states ─────────────────────────────────── */
         .empty-state { text-align: center; padding: 60px 24px; display: none; }
         .empty-state svg { width: 64px; height: 64px; color: var(--border); margin: 0 auto 16px; display: block; }
         .empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
         .empty-state p { font-size: 0.875rem; color: var(--text-3); }
 
-        /* ── Action row ───────────────────────────────────────────── */
         .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -475,7 +489,6 @@
         .btn-reset { background: var(--surface); color: var(--text-1); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); }
         .btn-reset:hover { background: var(--surface-2); border-color: #BBC7D9; }
 
-        /* ── Loading spinner ──────────────────────────────────────── */
         .loading-wrap {
             text-align: center;
             padding: 80px 24px;
@@ -593,7 +606,7 @@
         <p id="emptyMsg">Ce QR code ne correspond à aucune boîte enregistrée.</p>
     </div>
 
-    <!-- Action row (always visible once loaded) -->
+    <!-- Action row -->
     <div class="action-row" id="actionRow" style="display:none;">
         <button class="action-btn btn-print" onclick="window.print()">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
@@ -610,7 +623,7 @@
 <script>
     // ─── State ─────────────────────────────────────────────────────────────────
     let checkedSet  = new Set();
-    let totalCount  = 0;
+    let totalCount  = 0;   // only counts disponible instruments
 
     // ─── Supabase client ───────────────────────────────────────────────────────
     const { createClient } = supabase;
@@ -627,8 +640,6 @@
     async function init() {
         const params = new URLSearchParams(window.location.search);
         const kitId  = params.get('id');
-
-        // Legacy support: old QR codes used ?data= with Base64 payload
         const rawData = params.get('data');
 
         if (kitId) {
@@ -640,7 +651,7 @@
         }
     }
 
-    // ─── Load from Supabase (new method) ──────────────────────────────────────
+    // ─── Load from Supabase ───────────────────────────────────────────────────
     async function loadFromDB(kitId) {
         const client = getDB();
         if (!client) {
@@ -676,7 +687,7 @@
         }
     }
 
-    // ─── Load from Base64 URL (legacy QR codes) ───────────────────────────────
+    // ─── Load from Base64 (legacy) ────────────────────────────────────────────
     function loadFromBase64(encoded) {
         try {
             const kitData = JSON.parse(decodeURIComponent(escape(atob(encoded))));
@@ -708,7 +719,8 @@
             document.getElementById('obsCard').style.display = 'block';
         }
 
-        totalCount = data.instruments.length;
+        // Only disponible instruments count toward progress
+        totalCount = data.instruments.filter(i => i.available !== false).length;
         renderInstruments(data.instruments);
         updateProgress();
 
@@ -731,18 +743,24 @@
             'a verifier': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
         };
 
-        instruments.forEach((instr, idx) => {
-            const card = document.createElement('div');
-            card.className = 'instrument-card';
-            card.dataset.idx = idx;
-            card.style.animation = `slideUp 0.45s ${0.04 + idx * 0.045}s cubic-bezier(0.16, 1, 0.3, 1) both`;
+        // Separate disponible from non-disponible
+        const disponible    = instruments.filter(i => i.available !== false);
+        const nonDisponible = instruments.filter(i => i.available === false);
 
-            const hasPieces    = instr.pieces && instr.pieces.length > 1;
+        // Build a global index map so checkedSet indices stay consistent
+        const buildCard = (instr, globalIdx) => {
+            const isUnavailable = instr.available === false;
+            const card = document.createElement('div');
+            card.className = `instrument-card${isUnavailable ? ' unavailable' : ''}`;
+            card.dataset.idx = globalIdx;
+            card.style.animation = `slideUp 0.45s ${0.04 + globalIdx * 0.045}s cubic-bezier(0.16, 1, 0.3, 1) both`;
+
+            const hasPieces    = !isUnavailable && instr.pieces && instr.pieces.length > 1;
             const overallState = instr.pieces?.[0]?.state || 'fiable';
 
-            // Build pieces HTML
+            // Pieces detail (only for disponible)
             let piecesHTML = '';
-            if (instr.pieces && instr.pieces.length > 0) {
+            if (!isUnavailable && instr.pieces && instr.pieces.length > 0) {
                 piecesHTML = `<div class="pieces-section">
                     <div class="pieces-section-inner">
                         <div class="pieces-label">Détail par pièce (${instr.pieces.length})</div>`;
@@ -760,25 +778,28 @@
                 piecesHTML += `</div></div>`;
             }
 
+            // Check-circle icon: lock SVG for unavailable
+            const circleIcon = isUnavailable
+                ? `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--text-3);opacity:0.7;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`
+                : `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>`;
+
             card.innerHTML = `
             <div class="instr-main">
-                <div class="check-circle">
-                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                </div>
+                <div class="check-circle">${circleIcon}</div>
                 <div class="instr-info">
                     <div class="instr-name">${escapeHtml(instr.name) || '<em style="color:var(--text-3)">Sans nom</em>'}</div>
                     <div class="instr-tags">
-                        <span class="instr-tag tag-qty">
+                        ${!isUnavailable ? `<span class="instr-tag tag-qty">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
                             Qté: ${instr.quantity}
-                        </span>
-                        ${instr.available
-                            ? '<span class="instr-tag tag-avail"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Disponible</span>'
-                            : '<span class="instr-tag tag-unavail">Non disponible</span>'
+                        </span>` : ''}
+                        ${isUnavailable
+                            ? '<span class="instr-tag tag-unavail">Non disponible</span>'
+                            : '<span class="instr-tag tag-avail"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Disponible</span>'
                         }
-                        ${!hasPieces
+                        ${!isUnavailable && !hasPieces
                             ? `<span class="piece-state-badge ${stateMap[overallState] || 'state-fiable'}" style="padding:3px 8px;font-size:.72rem;">${stateIcon[overallState] || stateIcon.fiable}${stateLabel[overallState] || overallState}</span>`
-                            : `<span class="instr-tag" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);">${instr.pieces.length} pièces</span>`
+                            : (!isUnavailable ? `<span class="instr-tag" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);">${instr.pieces.length} pièces</span>` : '')
                         }
                     </div>
                     ${instr.comment ? `<div class="instr-comment">"${escapeHtml(instr.comment)}"</div>` : ''}
@@ -787,27 +808,32 @@
             </div>
             ${piecesHTML}`;
 
-            const mainRow = card.querySelector('.instr-main');
-            const chevron = card.querySelector('.instr-chevron');
+            // ── Only attach interactions to disponible cards ──
+            if (!isUnavailable) {
+                const mainRow = card.querySelector('.instr-main');
+                const chevron = card.querySelector('.instr-chevron');
 
-            if (hasPieces) {
-                chevron.addEventListener('click', e => {
-                    e.stopPropagation();
-                    card.classList.toggle('expanded');
-                });
-                mainRow.addEventListener('click', e => {
-                    if (e.target.closest('.instr-chevron')) return;
-                    toggleCheck(card, idx);
-                });
-            } else {
-                card.addEventListener('click', () => toggleCheck(card, idx));
+                if (hasPieces) {
+                    chevron.addEventListener('click', e => {
+                        e.stopPropagation();
+                        card.classList.toggle('expanded');
+                    });
+                    mainRow.addEventListener('click', e => {
+                        if (e.target.closest('.instr-chevron')) return;
+                        toggleCheck(card, globalIdx);
+                    });
+                } else {
+                    card.addEventListener('click', () => toggleCheck(card, globalIdx));
+                }
             }
 
             list.appendChild(card);
-        });
+        };
+
+        instruments.forEach((instr, idx) => buildCard(instr, idx));
     }
 
-    // ─── Toggle check ──────────────────────────────────────────────────────────
+    // ─── Toggle check (only for disponible) ───────────────────────────────────
     function toggleCheck(card, idx) {
         card.classList.add('checking');
         card.addEventListener('animationend', () => card.classList.remove('checking'), { once: true });
@@ -828,14 +854,14 @@
         bar.style.width = pct + '%';
         bar.classList.toggle('complete', pct === 100);
         document.getElementById('progressCount').textContent = `${checkedSet.size} / ${totalCount}`;
-        document.getElementById('completeBanner').classList.toggle('show', pct === 100);
+        document.getElementById('completeBanner').classList.toggle('show', totalCount > 0 && pct === 100);
     }
 
     // ─── Reset ────────────────────────────────────────────────────────────────
     document.getElementById('resetBtn').addEventListener('click', () => {
         if (!confirm('Réinitialiser la liste de vérification?')) return;
         checkedSet.clear();
-        document.querySelectorAll('.instrument-card').forEach(c => c.classList.remove('checked'));
+        document.querySelectorAll('.instrument-card:not(.unavailable)').forEach(c => c.classList.remove('checked'));
         updateProgress();
     });
 

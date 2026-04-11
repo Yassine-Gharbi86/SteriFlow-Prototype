@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SteriFlow — Modifier une Boîte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:        #1B3A5C;
+            --navy-deep:   #102742;
+            --navy-light:  #254E7A;
+            --teal:        #177A7A;
+            --bg:          #EEF2F8;
+            --surface:     #FFFFFF;
+            --surface-2:   #F7F9FC;
+            --border:      #D4DCE9;
+            --border-2:    #BBC7D9;
+            --text-1:      #141E2D;
+            --text-2:      #4A5A6E;
+            --text-3:      #7B8FA3;
+            --success:     #1A6B45;
+            --success-bg:  #EAF5EF;
+            --success-bd:  #A3CEBC;
+            --warn:        #7B5A10;
+            --warn-bg:     #FEF9EC;
+            --warn-bd:     #DFC080;
+            --danger:      #8B2020;
+            --danger-bg:   #FEF2F2;
+            --danger-bd:   #EBA8A8;
+            --amber:       #92620A;
+            --amber-bg:    #FFFBEB;
+            --amber-bd:    #D4A847;
+            --radius:      8px;
+            --radius-lg:   12px;
+            --shadow-sm:   0 1px 4px rgba(20,30,45,0.07);
+            --shadow:      0 4px 16px rgba(20,30,45,0.09);
+            --shadow-lg:   0 8px 32px rgba(20,30,45,0.13);
+            --transition:  0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* ═══════════════════════ HEADER */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: var(--shadow-sm);
+            gap: 12px;
+        }
+
+        .header-logo img { height: 140px; object-fit: contain; display: block; flex-shrink: 0; }
+
+        .header-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 12px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-2);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover { background: var(--surface-2); border-color: var(--border-2); color: var(--text-1); }
+        .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+        .nav-btn .nav-label { display: inline; }
+
+        .db-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+
+        .db-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--border-2);
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .db-status-dot.connected { background: #4ADE80; }
+        .db-status-dot.error     { background: #F87171; }
+
+        /* ═══════════════════════ ANIMATIONS */
+        @keyframes fadeIn    { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp  { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes spin      { to { transform: rotate(360deg); } }
+        @keyframes pulse     { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+        @keyframes shimmer   { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+        @keyframes rowFadeIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes notifIn   { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes notifOut  { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+        @keyframes scaleIn   { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+
+        /* ═══════════════════════ PICKER STATE */
+        #pickerView {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 28px 20px;
+            animation: fadeIn 0.4s ease both;
+        }
+
+        .picker-hero {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .picker-hero-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            box-shadow: 0 6px 20px rgba(27,58,92,0.28);
+        }
+
+        .picker-hero-icon svg { width: 26px; height: 26px; color: white; }
+
+        .picker-hero h1 {
+            font-size: clamp(1.25rem, 3vw, 1.625rem);
+            font-weight: 700;
+            color: var(--text-1);
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .picker-hero p {
+            font-size: 0.9rem;
+            color: var(--text-3);
+        }
+
+        /* Search bar */
+        .picker-search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .picker-search-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .picker-search-wrap svg {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 17px;
+            height: 17px;
+            color: var(--text-3);
+            pointer-events: none;
+        }
+
+        .picker-search-input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9375rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            min-height: 48px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .picker-search-input:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(27,58,92,0.09), var(--shadow-sm);
+        }
+
+        .picker-search-input::placeholder { color: var(--text-3); }
+
+        .picker-sort-select {
+            padding: 12px 34px 12px 14px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-2);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%237B8FA3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 18px;
+            cursor: pointer;
+            min-height: 48px;
+            box-shadow: var(--shadow-sm);
+            transition: border-color var(--transition);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .picker-sort-select:focus { border-color: var(--navy); }
+
+        /* Stats bar */
+        .picker-stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding: 0 2px;
+        }
+
+        .picker-stats-count {
+            font-size: 0.8125rem;
+            color: var(--text-3);
+            font-weight: 500;
+        }
+
+        .picker-stats-count strong { color: var(--text-1); font-weight: 600; }
+
+        .picker-refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 10px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-3);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .picker-refresh-btn:hover { color: var(--navy); border-color: var(--border-2); background: var(--surface); }
+        .picker-refresh-btn svg { width: 13px; height: 13px; }
+        .picker-refresh-btn.spinning svg { animation: spin 0.7s linear infinite; }
+
+        /* Kit cards grid */
+        .kits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .kit-pick-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            cursor: pointer;
+            transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.4s ease both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kit-pick-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--teal) 100%);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .kit-pick-card:hover {
+            border-color: var(--navy);
+            box-shadow: var(--shadow), 0 0 0 3px rgba(27,58,92,0.06);
+            transform: translateY(-2px);
+        }
+
+        .kit-pick-card:hover::before { opacity: 1; }
+        .kit-pick-card:active { transform: scale(0.98) translateY(0); }
+
+        .kpc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+
+        .kpc-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+
+        .kit-pick-card:hover .kpc-icon {
+            background: rgba(27,58,92,0.07);
+            border-color: rgba(27,58,92,0.2);
+        }
+
+        .kpc-icon svg { width: 18px; height: 18px; color: var(--navy); }
+
+        .kpc-arrow {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-3);
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+
+        .kit-pick-card:hover .kpc-arrow {
+            background: var(--navy);
+            border-color: var(--navy);
+            color: white;
+        }
+
+        .kpc-arrow svg { width: 14px; height: 14px; }
+
+        .kpc-name {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: var(--text-1);
+            line-height: 1.3;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .kpc-service {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: #EBF4FF;
+            color: #1A4B8E;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .kpc-service svg { width: 10px; height: 10px; }
+
+        .kpc-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .kpc-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .kpc-id {
+            font-size: 0.68rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-3);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 160px;
+        }
+
+        .kpc-date {
+            font-size: 0.68rem;
+            color: var(--text-3);
+        }
+
+        .kpc-count-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-2);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .kpc-count-badge svg { width: 11px; height: 11px; }
+
+        /* Skeleton loader */
+        .skeleton-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .skel {
+            background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s ease infinite;
+            border-radius: 6px;
+        }
+
+        .skel-icon  { width: 40px; height: 40px; border-radius: 10px; margin-bottom: 12px; }
+        .skel-title { height: 18px; width: 70%; margin-bottom: 8px; }
+        .skel-sub   { height: 22px; width: 40%; border-radius: 12px; margin-bottom: 12px; }
+        .skel-line  { height: 1px; background: var(--border); margin-bottom: 10px; }
+        .skel-foot  { height: 14px; width: 60%; }
+
+        /* Empty & error states */
+        .picker-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 56px 24px;
+            color: var(--text-3);
+        }
+
+        .picker-empty svg { width: 52px; height: 52px; margin: 0 auto 14px; display: block; opacity: 0.35; }
+        .picker-empty h3  { font-size: 1rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+        .picker-empty p   { font-size: 0.875rem; }
+
+        /* ═══════════════════════ EDIT STATE */
+        #editView {
+            display: none;
+            animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        /* Back bar */
+        .back-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 13px;
+            background: none;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .back-btn:hover { background: var(--surface-2); border-color: var(--border-2); color: var(--text-1); }
+        .back-btn svg { width: 15px; height: 15px; }
+
+        .editing-kit-label {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-3);
+        }
+
+        .editing-kit-name {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .editing-badge {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background: var(--amber-bg);
+            border: 1px solid var(--amber-bd);
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--amber);
+        }
+
+        .editing-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--amber);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Main 2-col layout (mirrors index.html) */
+        .edit-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        /* ═══════════════════════ CARDS (same as index) */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .card-header h3 svg { width: 15px; height: 15px; color: var(--navy); flex-shrink: 0; }
+        .card-body { padding: 16px; }
+
+        /* ═══════════════════════ FORM CONTROLS */
+        .controls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+        .form-group   { position: relative; }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 4px;
+        }
+
+        .form-select,
+        .form-input {
+            width: 100%;
+            padding: 10px 34px 10px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+            min-height: 44px;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%237B8FA3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 18px;
+        }
+
+        .form-input { padding: 10px 12px; }
+        .form-select:focus, .form-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .form-textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,92,0.09); }
+
+        /* ═══════════════════════ BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 18px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            transition: all var(--transition);
+            white-space: nowrap;
+            min-height: 44px;
+        }
+
+        .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+        .btn-primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+        .btn-primary:hover:not(:disabled) { background: var(--navy-light); border-color: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
+
+        .btn-outline { background: transparent; color: var(--navy); border-color: var(--navy); }
+        .btn-outline:hover:not(:disabled) { background: rgba(27,58,92,0.05); transform: translateY(-1px); }
+
+        .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger-bd); }
+        .btn-danger:hover:not(:disabled) { background: var(--danger-bg); transform: translateY(-1px); }
+
+        .btn-add-instrument {
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .btn-add-instrument:hover { background: var(--navy-light); box-shadow: 0 4px 14px rgba(27,58,92,0.28); transform: translateY(-1px); }
+        .btn-add-instrument svg { width: 18px; height: 18px; }
+
+        /* ═══════════════════════ TABLE */
+        .table-wrap { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+        .instruments-table { width: 100%; border-collapse: collapse; }
+        .instruments-table thead { background: var(--surface-2); border-bottom: 1px solid var(--border); }
+
+        .instruments-table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+
+        .instruments-table th.center { text-align: center; }
+
+        .instruments-table tbody tr.instrument-main {
+            border-bottom: 1px solid var(--border);
+            animation: rowFadeIn 0.3s ease both;
+            transition: background var(--transition);
+        }
+
+        .instruments-table tbody tr.instrument-main:hover { background: var(--surface-2); }
+        .instruments-table tbody tr.instrument-main:last-child { border-bottom: none; }
+
+        .instruments-table td { padding: 10px 12px; vertical-align: middle; }
+        .instruments-table td.center { text-align: center; }
+
+        tr.pieces-container { background: #F9FBFD; border-bottom: 2px solid var(--border); }
+        tr.pieces-container td { padding: 0; }
+
+        .pieces-inner {
+            padding: 8px 12px 12px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeIn 0.25s ease both;
+        }
+
+        .piece-header {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            padding-bottom: 4px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .piece-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .piece-row { display: grid; grid-template-columns: 72px 150px 1fr; gap: 8px; align-items: center; }
+
+        .piece-label { font-size: 0.78rem; font-weight: 500; color: var(--text-2); display: flex; align-items: center; gap: 5px; }
+
+        .piece-num {
+            width: 20px;
+            height: 20px;
+            background: var(--navy);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .table-input {
+            width: 100%;
+            padding: 7px 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-1);
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        .table-input:focus, .table-input:hover { background: var(--surface); border-color: var(--border); }
+        .table-input:focus { border-color: var(--navy); box-shadow: 0 0 0 2px rgba(27,58,92,0.09); background: var(--surface); }
+
+        .table-select {
+            padding: 7px 28px 7px 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8125rem;
+            color: var(--text-1);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%237B8FA3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 6px center;
+            background-repeat: no-repeat;
+            background-size: 15px;
+            cursor: pointer;
+            transition: border-color var(--transition);
+        }
+
+        .table-select:focus { border-color: var(--navy); outline: none; }
+        .table-select.state-fiable      { border-color: var(--success-bd); background-color: var(--success-bg); color: var(--success); }
+        .table-select.state-non_fiable  { border-color: var(--danger-bd);  background-color: var(--danger-bg);  color: var(--danger); }
+        .table-select.state-a_verifier  { border-color: var(--warn-bd);    background-color: var(--warn-bg);    color: var(--warn); }
+
+        .qty-control { display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-2);
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+
+        .qty-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
+        .qty-btn svg { width: 12px; height: 12px; }
+
+        .qty-value {
+            width: 28px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-1);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--border-2);
+            border-radius: 22px;
+            transition: background var(--transition);
+        }
+
+        .toggle-slider::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .toggle-switch input:checked + .toggle-slider { background: var(--success); }
+        .toggle-switch input:checked + .toggle-slider::after { transform: translateX(18px); }
+
+        .delete-row-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-3);
+            padding: 6px;
+            border-radius: 4px;
+            display: flex;
+            transition: all var(--transition);
+        }
+
+        .delete-row-btn:hover { color: var(--danger); background: var(--danger-bg); }
+        .delete-row-btn svg { width: 15px; height: 15px; }
+
+        .table-empty { text-align: center; padding: 40px 20px; color: var(--text-3); }
+        .table-empty svg { width: 36px; height: 36px; margin: 0 auto 10px; display: block; opacity: 0.5; }
+        .table-empty p { font-size: 0.875rem; }
+
+        .instrument-count { font-size: 0.8125rem; color: var(--text-3); }
+        .instrument-count strong { color: var(--text-1); font-weight: 600; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .info-item .info-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+        .info-item .info-value { font-size: 0.875rem; color: var(--text-1); font-family: 'IBM Plex Mono', monospace; }
+
+        .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 0 0 4px; }
+
+        /* ═══════════════════════ SIDEBAR */
+        .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+        .qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-2);
+            border-radius: var(--radius);
+            padding: 20px;
+            min-height: 180px;
+        }
+
+        .qr-placeholder { text-align: center; color: var(--text-3); }
+        .qr-placeholder svg { width: 55px; height: 55px; margin: 0 auto 10px; display: block; opacity: 0.35; }
+        .qr-placeholder p { font-size: 0.8125rem; }
+        #qrcode canvas { border-radius: 4px; display: block; max-width: 100%; }
+
+        .sidebar-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8125rem;
+            gap: 8px;
+        }
+
+        .sidebar-info-row:last-child { border-bottom: none; }
+        .sidebar-info-row .si-label { color: var(--text-3); font-weight: 500; white-space: nowrap; }
+        .sidebar-info-row .si-value { color: var(--text-1); font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-align: right; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+
+        .instrument-main.unavailable td:not(.center):not(:last-child) { opacity: 0.5; }
+
+        /* ═══════════════════════ NOTIFICATIONS */
+        .notification {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            left: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 9999;
+            box-shadow: var(--shadow-lg);
+            animation: notifIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .notification svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .notification.success { background: #1A6B45; color: #fff; }
+        .notification.error   { background: var(--danger); color: #fff; }
+        .notification.info    { background: var(--navy); color: #fff; }
+
+        /* ═══════════════════════ CONFIRM MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(16,39,66,0.55);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.95) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-bd);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .modal-icon svg { width: 22px; height: 22px; color: var(--danger); }
+        .modal-title { font-size: 1rem; font-weight: 700; color: var(--text-1); margin-bottom: 6px; }
+        .modal-msg { font-size: 0.875rem; color: var(--text-2); line-height: 1.55; margin-bottom: 20px; }
+
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+        .modal-cancel {
+            padding: 9px 16px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .modal-cancel:hover { background: var(--bg); border-color: var(--border-2); }
+
+        .modal-confirm {
+            padding: 9px 16px;
+            background: var(--danger);
+            border: 1.5px solid var(--danger);
+            border-radius: var(--radius);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .modal-confirm:hover { background: #7A1C1C; }
+
+        /* ═══════════════════════ RESPONSIVE — TABLET */
+        @media (max-width: 1024px) {
+            .edit-main { grid-template-columns: 1fr 280px; padding: 16px; gap: 16px; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 0 16px; height: 56px; }
+            .header-title { font-size: 0.8125rem; }
+            #dbStatusText { display: none; }
+
+            .kits-grid { grid-template-columns: 1fr 1fr; }
+
+            .edit-main { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+
+            .sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+            .controls-row { grid-template-columns: 1fr 1fr; }
+
+            .action-row { gap: 8px; }
+            .btn { padding: 10px 14px; font-size: 0.8125rem; }
+
+            .back-bar { padding: 8px 14px; gap: 10px; flex-wrap: wrap; }
+            .editing-badge { margin-left: 0; }
+        }
+
+        @media (max-width: 480px) {
+            header { padding: 0 12px; height: 52px; gap: 8px; }
+            .header-logo img { height: 110px; }
+            .header-title { font-size: 0.72rem; letter-spacing: 0.04em; }
+            .nav-btn .nav-label { display: none; }
+            .nav-btn { padding: 8px 10px; }
+
+            .kits-grid { grid-template-columns: 1fr; }
+
+            #pickerView { padding: 16px 12px; }
+            .picker-search-row { flex-direction: column; align-items: stretch; }
+            .picker-sort-select { width: 100%; }
+
+            .edit-main { padding: 10px; gap: 10px; }
+            .card-body { padding: 12px; }
+            .card-header { padding: 12px 14px; }
+            .controls-row { grid-template-columns: 1fr; gap: 10px; }
+            .sidebar { display: flex; flex-direction: column; gap: 12px; }
+
+            .mobile-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .instruments-table { min-width: 520px; }
+            .pieces-inner { padding: 8px 10px 10px 28px; }
+            .piece-row { grid-template-columns: 60px 130px 1fr; gap: 6px; }
+
+            .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .action-row .btn:first-child { grid-column: 1 / -1; }
+            .btn { padding: 11px 12px; font-size: 0.8rem; }
+            .info-grid { grid-template-columns: 1fr; gap: 10px; }
+            .qr-container { padding: 16px; min-height: 150px; }
+        }
+
+        @media (max-width: 360px) {
+            .header-title { display: none; }
+            .instruments-table { min-width: 460px; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .qty-btn { width: 32px; height: 32px; }
+            .delete-row-btn { padding: 8px; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-logo">
+        <img src="Assets/logo_no_bg.png" alt="SteriFlow">
+    </div>
+    <div class="header-title">Modifier une Boîte</div>
+    <nav class="header-nav">
+        <div class="db-status" id="dbStatus">
+            <div class="db-status-dot" id="dbStatusDot"></div>
+            <span id="dbStatusText">Base…</span>
+        </div>
+        <a href="index.html" class="nav-btn" title="Créer une nouvelle boîte">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span class="nav-label">Nouvelle boîte</span>
+        </a>
+        <a href="#" onclick="sessionStorage.removeItem('sf_auth'); window.location.href='login.html'; return false;" class="nav-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <span class="nav-label">Déconnexion</span>
+        </a>
+    </nav>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     PICKER VIEW
+══════════════════════════════════════════════ -->
+<div id="pickerView">
+
+    <div class="picker-hero">
+        <div class="picker-hero-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        </div>
+        <h1>Sélectionner une boîte</h1>
+        <p>Choisissez la boîte que vous souhaitez modifier</p>
+    </div>
+
+    <div class="picker-search-row">
+        <div class="picker-search-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="pickerSearch" class="picker-search-input" placeholder="Rechercher par nom, service ou ID…">
+        </div>
+        <select id="pickerSort" class="picker-sort-select">
+            <option value="date_desc">Plus récentes</option>
+            <option value="date_asc">Plus anciennes</option>
+            <option value="name_asc">Nom A → Z</option>
+            <option value="name_desc">Nom Z → A</option>
+        </select>
+    </div>
+
+    <div class="picker-stats">
+        <span class="picker-stats-count"><strong id="kitsCount">—</strong> boîte(s) trouvée(s)</span>
+        <button class="picker-refresh-btn" id="refreshBtn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Actualiser
+        </button>
+    </div>
+
+    <div class="kits-grid" id="kitsGrid">
+        <!-- skeleton placeholders -->
+        <div class="skeleton-card">
+            <div class="skel skel-icon"></div>
+            <div class="skel skel-title"></div>
+            <div class="skel skel-sub"></div>
+            <div class="skel-line"></div>
+            <div class="skel skel-foot"></div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skel skel-icon"></div>
+            <div class="skel skel-title"></div>
+            <div class="skel skel-sub"></div>
+            <div class="skel-line"></div>
+            <div class="skel skel-foot"></div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skel skel-icon"></div>
+            <div class="skel skel-title"></div>
+            <div class="skel skel-sub"></div>
+            <div class="skel-line"></div>
+            <div class="skel skel-foot"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     EDIT VIEW
+══════════════════════════════════════════════ -->
+<div id="editView">
+
+    <!-- Back bar -->
+    <div class="back-bar">
+        <button class="back-btn" id="backBtn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Toutes les boîtes
+        </button>
+        <div>
+            <div class="editing-kit-label">Modification en cours</div>
+            <div class="editing-kit-name" id="editingKitName">—</div>
+        </div>
+        <span class="editing-badge">Mode édition</span>
+    </div>
+
+    <div class="edit-main">
+        <div class="left-col">
+
+            <!-- Box Info -->
+            <div class="card" style="margin-bottom:12px;">
+                <div class="card-header">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V11"/></svg>
+                        Informations de la Boîte
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="controls-row">
+                        <div class="form-group">
+                            <label class="form-label">Nom de la Boîte</label>
+                            <select id="kitName" class="form-select">
+                                <option value="">Sélectionner…</option>
+                                <option>Boîte Valves</option>
+                                <option>Boîte Coelioscopie</option>
+                                <option>Boîte Appendicite</option>
+                                <option>Boîte Abdomen</option>
+                                <option>Boîte à instruments longs</option>
+                                <option>Boîte Kyste</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Service</label>
+                            <select id="service" class="form-select">
+                                <option value="">Sélectionner…</option>
+                                <option>Bloc Opératoire A21</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instruments List -->
+            <div class="card" style="margin-bottom:12px;">
+                <div class="card-header">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        Liste des Instruments
+                    </h3>
+                    <span class="instrument-count"><strong id="instrCount">0</strong> instrument(s)</span>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    <div class="mobile-table-wrap">
+                        <div class="table-wrap" style="border:none;border-radius:0;margin:0;">
+                            <table class="instruments-table">
+                                <thead>
+                                    <tr>
+                                        <th>Instrument</th>
+                                        <th class="center" style="width:76px;">Disponible</th>
+                                        <th class="center" style="width:100px;">Quantité</th>
+                                        <th style="width:180px;">Commentaire</th>
+                                        <th class="center" style="width:44px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="instrumentsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:0.75rem;color:var(--text-3);">Faites défiler horizontalement si nécessaire</span>
+                    <button id="addInstrumentBtn" class="btn-add-instrument" title="Ajouter un instrument">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="card" style="margin-bottom:16px;">
+                <div class="card-header">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Informations complémentaires
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid" style="margin-bottom:12px;">
+                        <div class="info-item">
+                            <div class="info-label">Créée / modifiée</div>
+                            <div class="info-value" id="dateCreated">—</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">ID Unique</div>
+                            <div class="info-value" id="uniqueId" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Observations</label>
+                        <textarea id="observations" class="form-textarea" placeholder="Notes, remarques, instructions spéciales…"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-row">
+                <button id="saveBtn" class="btn btn-primary">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                    Sauvegarder
+                </button>
+                <button id="generateQRBtn" class="btn btn-outline">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    Régénérer QR
+                </button>
+                <button id="deleteBtn" class="btn btn-danger">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4"/></svg>
+                        QR Code
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="qr-container" id="qrcodeContainer">
+                        <div id="qrcode"></div>
+                        <div id="qrPlaceholder" class="qr-placeholder">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                            <p>Cliquez "Régénérer QR"</p>
+                        </div>
+                    </div>
+                    <div id="qrActions" style="display:none;margin-top:12px;flex-direction:column;gap:8px;">
+                        <button id="downloadQRBtn" class="btn btn-primary" style="width:100%;justify-content:center;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Télécharger
+                        </button>
+                        <button id="testLinkBtn" class="btn btn-outline" style="width:100%;justify-content:center;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            Tester le lien
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Métadonnées
+                    </h3>
+                </div>
+                <div class="card-body" style="padding:10px 14px;">
+                    <div class="sidebar-info-row">
+                        <span class="si-label">Créée / modifiée</span>
+                        <span class="si-value" id="dateCreatedSidebar">—</span>
+                    </div>
+                    <div class="sidebar-info-row">
+                        <span class="si-label">ID Unique</span>
+                        <span class="si-value" id="uniqueIdSidebar">—</span>
+                    </div>
+                    <div class="sidebar-info-row">
+                        <span class="si-label">Responsable</span>
+                        <span class="si-value">Admin</span>
+                    </div>
+                    <div class="sidebar-info-row">
+                        <span class="si-label">Instruments</span>
+                        <span class="si-value" id="instrCountSidebar">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <div class="modal-title">Supprimer cette boîte ?</div>
+        <div class="modal-msg">Cette action est irréversible. La boîte <strong id="deleteKitNameLabel">—</strong> et tous ses instruments seront définitivement supprimés de la base de données.</div>
+        <div class="modal-actions">
+            <button class="modal-cancel" id="cancelDelete">Annuler</button>
+            <button class="modal-confirm" id="confirmDelete">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ─── Auth guard ─────────────────────────────────────────────────────────────
+    if (!sessionStorage.getItem('sf_auth')) {
+        window.location.replace('login.html');
+    }
+
+    // ─── Supabase ────────────────────────────────────────────────────────────────
+    const { createClient } = supabase;
+    let db = null;
+    let dbReady = false;
+
+    function initDB() {
+        const dot  = document.getElementById('dbStatusDot');
+        const text = document.getElementById('dbStatusText');
+        try {
+            if (!STERIFLOW_CONFIG.supabaseUrl || STERIFLOW_CONFIG.supabaseUrl === 'YOUR_SUPABASE_URL') {
+                dot.style.background = '#FBBF24';
+                text.textContent = 'DB non config.';
+                return;
+            }
+            db = createClient(STERIFLOW_CONFIG.supabaseUrl, STERIFLOW_CONFIG.supabaseAnonKey);
+            db.from('kits').select('kit_id', { count: 'exact', head: true }).then(({ error }) => {
+                if (error) {
+                    dot.style.background = '#F87171';
+                    text.textContent = 'Erreur DB';
+                } else {
+                    dot.classList.add('connected');
+                    text.textContent = 'Connectée';
+                    dbReady = true;
+                    loadKits();
+                }
+            });
+        } catch (e) {
+            dot.style.background = '#F87171';
+            text.textContent = 'Erreur DB';
+        }
+    }
+
+    initDB();
+
+    // ─── State ───────────────────────────────────────────────────────────────────
+    let allKits      = [];
+    let filteredKits = [];
+    let instruments  = [];
+    let kitUniqueId  = '';
+    let kitCreationDate = '';
+    let currentViewerURL = '';
+
+    // ─── Load all kits ───────────────────────────────────────────────────────────
+    async function loadKits() {
+        if (!db) return;
+        try {
+            const { data, error } = await db
+                .from('kits')
+                .select('kit_id, kit_name, service, instruments, created_at, updated_at')
+                .order('updated_at', { ascending: false });
+
+            if (error) throw error;
+            allKits = data || [];
+            applyFilter();
+        } catch (err) {
+            console.error(err);
+            document.getElementById('kitsGrid').innerHTML = `
+                <div class="picker-empty">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h3>Erreur de chargement</h3>
+                    <p>${escapeHtml(err.message)}</p>
+                </div>`;
+        }
+    }
+
+    function applyFilter() {
+        const q    = (document.getElementById('pickerSearch').value || '').toLowerCase().trim();
+        const sort = document.getElementById('pickerSort').value;
+
+        filteredKits = allKits.filter(k => {
+            if (!q) return true;
+            return (k.kit_name || '').toLowerCase().includes(q) ||
+                   (k.service  || '').toLowerCase().includes(q) ||
+                   (k.kit_id   || '').toLowerCase().includes(q);
+        });
+
+        filteredKits.sort((a, b) => {
+            if (sort === 'date_desc') return new Date(b.updated_at) - new Date(a.updated_at);
+            if (sort === 'date_asc')  return new Date(a.updated_at) - new Date(b.updated_at);
+            if (sort === 'name_asc')  return (a.kit_name || '').localeCompare(b.kit_name || '');
+            if (sort === 'name_desc') return (b.kit_name || '').localeCompare(a.kit_name || '');
+            return 0;
+        });
+
+        document.getElementById('kitsCount').textContent = filteredKits.length;
+        renderKitsGrid();
+    }
+
+    function renderKitsGrid() {
+        const grid = document.getElementById('kitsGrid');
+        grid.innerHTML = '';
+
+        if (filteredKits.length === 0) {
+            grid.innerHTML = `
+                <div class="picker-empty">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <h3>Aucune boîte trouvée</h3>
+                    <p>Essayez un autre terme de recherche ou créez une nouvelle boîte.</p>
+                </div>`;
+            return;
+        }
+
+        filteredKits.forEach((kit, i) => {
+            const instrCount = Array.isArray(kit.instruments) ? kit.instruments.length : 0;
+            const date = kit.updated_at
+                ? new Date(kit.updated_at).toLocaleDateString('fr-FR')
+                : '—';
+
+            const card = document.createElement('div');
+            card.className = 'kit-pick-card';
+            card.style.animationDelay = `${i * 0.045}s`;
+
+            card.innerHTML = `
+                <div class="kpc-header">
+                    <div class="kpc-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V11"/></svg>
+                    </div>
+                    <div class="kpc-arrow">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </div>
+                <div class="kpc-name">${escapeHtml(kit.kit_name) || '<em>Sans nom</em>'}</div>
+                ${kit.service ? `<div class="kpc-service">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
+                    ${escapeHtml(kit.service)}
+                </div>` : ''}
+                <div class="kpc-footer">
+                    <div class="kpc-meta">
+                        <div class="kpc-id">${escapeHtml(kit.kit_id)}</div>
+                        <div class="kpc-date">Modifié le ${date}</div>
+                    </div>
+                    <div class="kpc-count-badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+                        ${instrCount} instr.
+                    </div>
+                </div>`;
+
+            card.addEventListener('click', () => loadKitForEdit(kit.kit_id));
+            grid.appendChild(card);
+        });
+    }
+
+    // ─── Refresh button ──────────────────────────────────────────────────────────
+    document.getElementById('refreshBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('refreshBtn');
+        btn.classList.add('spinning');
+        await loadKits();
+        setTimeout(() => btn.classList.remove('spinning'), 600);
+        showNotification('Liste actualisée.', 'info');
+    });
+
+    // ─── Search & sort ───────────────────────────────────────────────────────────
+    let searchTimer;
+    document.getElementById('pickerSearch').addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilter, 200);
+    });
+    document.getElementById('pickerSort').addEventListener('change', applyFilter);
+
+    // ─── Load kit for editing ────────────────────────────────────────────────────
+    async function loadKitForEdit(kitId) {
+        if (!db) { showNotification('Base de données non disponible.', 'error'); return; }
+
+        showNotification('Chargement…', 'info');
+
+        try {
+            const { data, error } = await db.from('kits').select('*').eq('kit_id', kitId).single();
+            if (error || !data) throw new Error('Boîte introuvable.');
+
+            // Populate form
+            kitUniqueId     = data.kit_id;
+            kitCreationDate = data.created_at
+                ? new Date(data.created_at).toLocaleDateString('fr-FR')
+                : new Date().toLocaleDateString('fr-FR');
+            instruments = Array.isArray(data.instruments) ? data.instruments : [];
+
+            // Select values
+            setSelectValue('kitName', data.kit_name);
+            setSelectValue('service', data.service);
+            document.getElementById('observations').value = data.observations || '';
+
+            // Meta
+            ['dateCreated', 'dateCreatedSidebar'].forEach(id =>
+                document.getElementById(id).textContent = kitCreationDate);
+            ['uniqueId', 'uniqueIdSidebar'].forEach(id =>
+                document.getElementById(id).textContent = kitUniqueId);
+
+            document.getElementById('editingKitName').textContent = data.kit_name || kitUniqueId;
+            document.getElementById('deleteKitNameLabel').textContent = data.kit_name || kitUniqueId;
+
+            // Reset QR
+            document.getElementById('qrcode').innerHTML = '';
+            document.getElementById('qrPlaceholder').classList.remove('hidden');
+            document.getElementById('qrActions').style.display = 'none';
+            currentViewerURL = '';
+
+            renderTable();
+            switchToEdit();
+        } catch (err) {
+            showNotification(`Erreur: ${err.message}`, 'error');
+        }
+    }
+
+    function setSelectValue(selectId, value) {
+        const sel = document.getElementById(selectId);
+        let found = false;
+        for (const opt of sel.options) {
+            if (opt.value === value || opt.text === value) {
+                sel.value = opt.value;
+                found = true;
+                break;
+            }
+        }
+        if (!found && value) {
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = value;
+            sel.appendChild(opt);
+            sel.value = value;
+        }
+    }
+
+    // ─── View switching ──────────────────────────────────────────────────────────
+    function switchToEdit() {
+        document.getElementById('pickerView').style.display = 'none';
+        const ev = document.getElementById('editView');
+        ev.style.display = 'block';
+        ev.style.animation = 'none';
+        requestAnimationFrame(() => {
+            ev.style.animation = 'scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both';
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchToPicker() {
+        document.getElementById('editView').style.display = 'none';
+        const pv = document.getElementById('pickerView');
+        pv.style.display = 'block';
+        pv.style.animation = 'none';
+        requestAnimationFrame(() => {
+            pv.style.animation = 'fadeIn 0.35s ease both';
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+        switchToPicker();
+        loadKits(); // refresh list when going back
+    });
+
+    // ─── Instruments table ────────────────────────────────────────────────────────
+    document.getElementById('addInstrumentBtn').addEventListener('click', () => addInstrumentRow());
+
+    function addInstrumentRow(data = {}) {
+        const qty = data.quantity || 1;
+        const row = {
+            id:        Date.now(),
+            name:      data.name      || '',
+            available: data.available !== undefined ? data.available : true,
+            quantity:  qty,
+            pieces:    data.pieces    || Array.from({ length: qty }, () => ({ state: 'fiable', note: '' })),
+            comment:   data.comment   || ''
+        };
+        instruments.push(row);
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('instrumentsTable');
+        tbody.innerHTML = '';
+        document.getElementById('instrCount').textContent = instruments.length;
+        document.getElementById('instrCountSidebar').textContent = instruments.length;
+
+        if (instruments.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="5">
+                <div class="table-empty">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <p>Aucun instrument. Cliquez + pour ajouter.</p>
+                </div>
+            </td>`;
+            tbody.appendChild(tr);
+            return;
+        }
+
+        instruments.forEach((instr, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = `instrument-main${instr.available ? '' : ' unavailable'}`;
+
+            const qtyCell = instr.available
+                ? `<div class="qty-control">
+                        <button class="qty-btn" onclick="changeQty(${idx},-1)">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                        </button>
+                        <span class="qty-value">${instr.quantity}</span>
+                        <button class="qty-btn" onclick="changeQty(${idx},1)">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        </button>
+                   </div>`
+                : `<span style="display:block;text-align:center;color:var(--text-3);font-size:0.85rem;">—</span>`;
+
+            tr.innerHTML = `
+                <td>
+                    <input type="text" class="table-input" value="${escapeHtml(instr.name)}"
+                        placeholder="Nom de l'instrument"
+                        onchange="instruments[${idx}].name = this.value">
+                </td>
+                <td class="center">
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${instr.available ? 'checked' : ''}
+                            onchange="instruments[${idx}].available = this.checked; renderTable()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </td>
+                <td>${qtyCell}</td>
+                <td>
+                    <input type="text" class="table-input" value="${escapeHtml(instr.comment)}"
+                        placeholder="Commentaire"
+                        onchange="instruments[${idx}].comment = this.value">
+                </td>
+                <td class="center">
+                    <button class="delete-row-btn" onclick="removeInstrument(${idx})" title="Supprimer">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </td>`;
+            tbody.appendChild(tr);
+
+            if (instr.available) {
+                const trPieces = document.createElement('tr');
+                trPieces.className = 'pieces-container';
+                let ph = `<td colspan="5"><div class="pieces-inner">
+                    <div class="piece-header">État par pièce</div>`;
+                instr.pieces.forEach((piece, pi) => {
+                    ph += `
+                    <div class="piece-row">
+                        <div class="piece-label">
+                            <span class="piece-num">${pi+1}</span> Pièce ${pi+1}
+                        </div>
+                        <select class="table-select ${stateClass(piece.state)}"
+                            onchange="updatePiece(${idx},${pi},'state',this.value);this.className='table-select '+stateClass(this.value)">
+                            <option value="fiable"     ${piece.state==='fiable'     ?'selected':''}>✓ Fiable</option>
+                            <option value="non fiable" ${piece.state==='non fiable' ?'selected':''}>✗ Non fiable</option>
+                            <option value="a verifier" ${piece.state==='a verifier' ?'selected':''}>⚠ À vérifier</option>
+                        </select>
+                        <input type="text" class="table-input" value="${escapeHtml(piece.note)}"
+                            placeholder="Note sur cette pièce…"
+                            onchange="updatePiece(${idx},${pi},'note',this.value)"
+                            style="background:white;border-color:var(--border);">
+                    </div>`;
+                });
+                ph += `</div></td>`;
+                trPieces.innerHTML = ph;
+                tbody.appendChild(trPieces);
+            }
+        });
+    }
+
+    function stateClass(state) {
+        return state === 'fiable'     ? 'state-fiable' :
+               state === 'non fiable' ? 'state-non_fiable' :
+               'state-a_verifier';
+    }
+
+    function changeQty(idx, delta) {
+        const instr = instruments[idx];
+        const newQty = Math.max(1, instr.quantity + delta);
+        instr.quantity = newQty;
+        if (newQty > instr.pieces.length) {
+            while (instr.pieces.length < newQty) instr.pieces.push({ state: 'fiable', note: '' });
+        } else {
+            instr.pieces = instr.pieces.slice(0, newQty);
+        }
+        renderTable();
+    }
+
+    function updatePiece(instrIdx, pieceIdx, field, value) {
+        instruments[instrIdx].pieces[pieceIdx][field] = value;
+    }
+
+    function removeInstrument(idx) {
+        instruments.splice(idx, 1);
+        renderTable();
+    }
+
+    // ─── Save ────────────────────────────────────────────────────────────────────
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+        if (!dbReady) { showNotification('Base de données non connectée.', 'error'); return; }
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        const origHTML = btn.innerHTML;
+        btn.innerHTML = `<svg style="animation:spin .7s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Sauvegarde…`;
+
+        try {
+            const payload = {
+                kit_id:       kitUniqueId,
+                kit_name:     document.getElementById('kitName').value,
+                service:      document.getElementById('service').value,
+                instruments:  instruments,
+                observations: document.getElementById('observations').value,
+                updated_at:   new Date().toISOString()
+            };
+            const { error } = await db.from('kits').upsert(payload, { onConflict: 'kit_id' });
+            if (error) throw error;
+            showNotification(`Modifications sauvegardées — ${kitUniqueId}`, 'success');
+            // Update the editing kit name in back bar
+            document.getElementById('editingKitName').textContent =
+                document.getElementById('kitName').value || kitUniqueId;
+        } catch (err) {
+            showNotification(`Erreur: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = origHTML;
+        }
+    });
+
+    // ─── Regenerate QR ───────────────────────────────────────────────────────────
+    document.getElementById('generateQRBtn').addEventListener('click', async () => {
+        if (!dbReady) { showNotification('Base de données non connectée.', 'error'); return; }
+        const btn = document.getElementById('generateQRBtn');
+        btn.disabled = true;
+        const origHTML = btn.innerHTML;
+        btn.innerHTML = `<svg style="animation:spin .7s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Génération…`;
+
+        try {
+            const payload = {
+                kit_id:       kitUniqueId,
+                kit_name:     document.getElementById('kitName').value,
+                service:      document.getElementById('service').value,
+                instruments:  instruments,
+                observations: document.getElementById('observations').value,
+                updated_at:   new Date().toISOString()
+            };
+            const { error } = await db.from('kits').upsert(payload, { onConflict: 'kit_id' });
+            if (error) throw error;
+
+            const viewerURL = getViewerUrl(kitUniqueId);
+            currentViewerURL = viewerURL;
+
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            document.getElementById('qrPlaceholder').classList.add('hidden');
+
+            const canvas  = document.createElement('canvas');
+            const qrSize  = Math.min(260, document.getElementById('qrcodeContainer').clientWidth - 40);
+            new QRious({ element: canvas, value: viewerURL, size: qrSize, level: 'M', background: '#ffffff', foreground: '#1B3A5C' });
+            qrcodeDiv.appendChild(canvas);
+
+            document.getElementById('qrActions').style.display = 'flex';
+            showNotification(`QR régénéré — ${kitUniqueId}`, 'success');
+        } catch (err) {
+            showNotification(`Erreur: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = origHTML;
+        }
+    });
+
+    // ─── Download QR ─────────────────────────────────────────────────────────────
+    document.getElementById('downloadQRBtn').addEventListener('click', () => {
+        const canvas = document.querySelector('#qrcode canvas');
+        if (canvas) {
+            const link = document.createElement('a');
+            link.download = `SteriFlow_${kitUniqueId || 'QR'}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            showNotification('QR Code téléchargé !', 'success');
+        }
+    });
+
+    document.getElementById('testLinkBtn').addEventListener('click', () => {
+        if (currentViewerURL) window.open(currentViewerURL, '_blank');
+        else showNotification('Veuillez d\'abord régénérer le QR code.', 'error');
+    });
+
+    // ─── Delete ───────────────────────────────────────────────────────────────────
+    const deleteModal = document.getElementById('deleteModal');
+
+    document.getElementById('deleteBtn').addEventListener('click', () => {
+        deleteModal.classList.add('open');
+    });
+
+    document.getElementById('cancelDelete').addEventListener('click', () => {
+        deleteModal.classList.remove('open');
+    });
+
+    deleteModal.addEventListener('click', (e) => {
+        if (e.target === deleteModal) deleteModal.classList.remove('open');
+    });
+
+    document.getElementById('confirmDelete').addEventListener('click', async () => {
+        if (!dbReady) { showNotification('Base de données non disponible.', 'error'); return; }
+        deleteModal.classList.remove('open');
+        const btn = document.getElementById('deleteBtn');
+        btn.disabled = true;
+
+        try {
+            const { error } = await db.from('kits').delete().eq('kit_id', kitUniqueId);
+            if (error) throw error;
+            showNotification('Boîte supprimée avec succès.', 'success');
+            setTimeout(() => {
+                instruments = []; kitUniqueId = ''; kitCreationDate = ''; currentViewerURL = '';
+                switchToPicker();
+                loadKits();
+            }, 1200);
+        } catch (err) {
+            showNotification(`Erreur de suppression: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    // ─── Notifications ────────────────────────────────────────────────────────────
+    function showNotification(msg, type = 'info') {
+        const icons = {
+            success: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            error:   '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            info:    '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        };
+        const n = document.createElement('div');
+        n.className = `notification ${type}`;
+        n.innerHTML = `${icons[type]}<span>${msg}</span>`;
+        document.body.appendChild(n);
+        setTimeout(() => {
+            n.style.animation = 'notifOut 0.3s ease forwards';
+            setTimeout(() => n.remove(), 300);
+        }, 3500);
+    }
+
+    function escapeHtml(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── CSS animation for spin ───────────────────────────────────────────────────
+    const spinStyle = document.createElement('style');
+    spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(spinStyle);
+
+    // ─── Handle direct URL param ?id=... ─────────────────────────────────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const directId  = urlParams.get('id');
+    if (directId && dbReady) {
+        loadKitForEdit(directId);
+    } else if (directId) {
+        // Wait for DB to be ready then load
+        const waitInterval = setInterval(() => {
+            if (dbReady) { clearInterval(waitInterval); loadKitForEdit(directId); }
+        }, 100);
+    }
+</script>
+</body>
+</html>

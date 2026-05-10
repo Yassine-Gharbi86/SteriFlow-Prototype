@@ -104,10 +104,22 @@
         @keyframes rowSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
         .instruments-table td{padding:10px 12px;vertical-align:middle;}
         .instruments-table td.center{text-align:center;}
+        
+        
+        
         @keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+        
+        
+        
+        
+        
         .table-input{width:100%;padding:7px 10px;font-family:'Outfit',sans-serif;font-size:0.875rem;color:var(--text-1);background:transparent;border:1px solid transparent;border-radius:6px;outline:none;transition:all var(--transition);}
         .table-input:focus,.table-input:hover{background:var(--surface);border-color:var(--border);}
         .table-input:focus{border-color:var(--navy);box-shadow:0 0 0 2px rgba(27,58,92,0.12);}
+        
+        
+        
+        
         .qty-control{display:flex;align-items:center;justify-content:center;gap:6px;}
         .qty-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;}
         .qty-btn:hover{background:var(--navy);color:white;border-color:var(--navy);transform:scale(1.15);}
@@ -324,14 +336,17 @@
 <script>
     if (!SF_API.isLoggedIn()) window.location.replace('login.html');
 
+
     const currentUser = SF_API.getUser();
     if (currentUser) document.getElementById('responsable').textContent = currentUser.full_name || currentUser.email;
+
 
     document.getElementById('themeToggle').addEventListener('click', () => {
         const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('sf_theme', next);
     });
+
 
     document.querySelectorAll('.btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -342,6 +357,7 @@
         });
     });
 
+
     async function initDB() {
         const dot = document.getElementById('dbStatusDot'), text = document.getElementById('dbStatusText');
         const ok = await SF_API.checkHealth();
@@ -349,6 +365,7 @@
         else    { dot.classList.add('error');     text.textContent = 'Erreur';    }
     }
     initDB();
+
 
     let instruments = [], kitUniqueId = '', kitCreationDate = '', currentViewerURL = '';
 
@@ -367,6 +384,7 @@
     }
 
     function escapeHtml(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 
     document.getElementById('addInstrumentBtn').addEventListener('click', () => addInstrumentRow());
 
@@ -403,6 +421,7 @@
     }
     function removeInstrument(idx) { instruments.splice(idx,1); renderTable(); }
 
+
     async function saveKit() {
         setKitMeta();
         return SF_API.saveKit({
@@ -413,6 +432,7 @@
             observations: document.getElementById('observations').value,
         });
     }
+
 
     document.getElementById('generateQRBtn').addEventListener('click', async () => {
         if (instruments.length === 0) { showNotification('Veuillez ajouter au moins un instrument.','error'); return; }
@@ -482,38 +502,5 @@
     document.head.appendChild(Object.assign(document.createElement('style'), {textContent:'@keyframes spin{to{transform:rotate(360deg)}}'}));
     renderTable();
 </script>
-
-<!-- ========================================================
-     🎵 PRANK SOUNDS — remove this block when done 😂
-     ======================================================== -->
-<script>
-(function () {
-    function playSound(src, vol) {
-        var a = new Audio(src);
-        a.volume = (vol !== undefined) ? vol : 1.0;
-        a.play().catch(function (e) { console.warn('Prank sound blocked:', e); });
-    }
-
-    // 🐣 + button  →  heehee.mp3
-    document.getElementById('addInstrumentBtn')
-        .addEventListener('click', function () {
-            playSound('Assets/heehee.mp3', 1.0);
-        });
-
-    // 🕺 Générer QR  →  billie jean.mp3  (capture phase = fires first, full blast)
-    document.getElementById('generateQRBtn')
-        .addEventListener('click', function () {
-            playSound('Assets/billie jean.mp3', 1.0);
-        }, true);
-
-    // 🦉 Theme toggle (light ↔ dark)  →  hoo.mp3
-    document.getElementById('themeToggle')
-        .addEventListener('click', function () {
-            playSound('Assets/hoo.mp3', 1.0);
-        });
-})();
-</script>
-<!-- ======================================================== -->
-
 </body>
 </html>

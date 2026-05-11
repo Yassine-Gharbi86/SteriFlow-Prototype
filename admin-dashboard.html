@@ -980,7 +980,7 @@
         btn.disabled = true; btn.textContent = 'Suppression…';
         try {
             // Uses a hard-delete endpoint — adjust path to match your API if needed
-            const res = await SF_API.request(`/api/auth/users/${pendingDeleteUserId}/`, { method: 'DELETE' });
+            const res = await SF_API.request(`/api/auth/users/${pendingDeleteUserId}/delete/`, { method: 'DELETE' });
             if (!res || !res.ok) throw new Error('Erreur lors de la suppression.');
             closeDeleteUserModal();
             showToast('Utilisateur supprimé.', 'success');

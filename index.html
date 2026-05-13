@@ -436,9 +436,15 @@
 
 
     document.getElementById('generateQRBtn').addEventListener('click', async () => {
-        if (instruments.length === 0) { showNotification('Veuillez ajouter au moins un instrument.','error'); return; }
-        const btn = document.getElementById('generateQRBtn');
-        btn.disabled = true;
+    if (instruments.length === 0) { showNotification('Veuillez ajouter au moins un instrument.','error'); return; }
+    
+    // Play sound
+    const sound = document.getElementById('genSound');
+    sound.currentTime = 0; // rewind to start so it replays every click
+    sound.play().catch(() => {}); // .catch silences autoplay policy errors
+    
+    const btn = document.getElementById('generateQRBtn');
+    btn.disabled = true;
         btn.innerHTML = `<svg style="animation:spin .7s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Sauvegarde…`;
         try {
             await saveKit();
@@ -503,5 +509,6 @@
     document.head.appendChild(Object.assign(document.createElement('style'), {textContent:'@keyframes spin{to{transform:rotate(360deg)}}'}));
     renderTable();
 </script>
+<audio id="genSound" src="Assets/musica.mp3" preload="auto"></audio>
 </body>
 </html>
